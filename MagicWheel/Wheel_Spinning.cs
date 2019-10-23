@@ -184,11 +184,22 @@ namespace MagicWheel
             while (angle > 360) { angle -= 360; }
 
             int entry = 0;
-            for (int i = EntryList.Count - 1; EntryList.Count > i && i >= 0; i--)
+            if (EntryList.Count <= 3)
             {
-                if (angle > EntryList[i].WheelLocation) { entry = i; break; }
+                for (int i = EntryList.Count - 1; EntryList.Count > i && i >= 0; i--)
+                {
+                    int choice = i - 1;
+                    if (choice < 0) { choice = EntryList.Count - 1; }
+                    if (angle > EntryList[i].WheelLocation) { entry = choice; break; }
+                }
             }
-
+            else
+            {
+                for (int i = EntryList.Count - 1; EntryList.Count > i && i >= 0; i--)
+                {
+                    if (angle > EntryList[i].WheelLocation) { entry = i; break; }
+                }
+            }
             return revList[entry];
         }
         private float CalculateNextAngle(float currentAngle, float finalAngle, float spinAddedSpeed, SpinDirection direction)

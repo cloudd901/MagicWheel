@@ -128,10 +128,10 @@ namespace MagicWheel
 
                         graphics3D.FillEllipse(new SolidBrush(_WheelProperties.ShadowColor), controlPoints[0].X, controlPoints[0].Y, _WheelSize.Diameter - 2, _WheelSize.Diameter - 2);
                         graphics3D.DrawEllipse(pen, controlPoints[0].X, controlPoints[0].Y, _WheelSize.Diameter - 2, _WheelSize.Diameter - 2);
+                        //graphics.FillRectangle(new SolidBrush(Color.Transparent), new RectangleF(0, 0, _ControlWheel3D.Width, _ControlWheel3D.Height));
 
                         graphics3D.DrawImage(wheelImage3D, new Point(0, 0));
                     }
-
                     _ControlWheel3D.Image = wheelImage3D;
                     _ControlWheel3D.Refresh();
                 }
@@ -144,7 +144,7 @@ namespace MagicWheel
                 graphics.CompositingQuality = CompositingQuality.HighQuality;
                 graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
-                graphics.FillRectangle(new SolidBrush(Color.Transparent), new RectangleF(0, 0, _ControlWheel.Width, _ControlWheel.Height));
+                //graphics.FillRectangle(new SolidBrush(Color.Transparent), new RectangleF(0, 0, _ControlWheel.Width, _ControlWheel.Height));
 
                 float angle = 360f / (float)entries;
                 float currentangle = angle;

@@ -117,6 +117,20 @@ namespace MagicWheel
             _ControlWheel.Controls.Add(_ControlArrow);
         }
 
+        public void BringToFront()
+        {
+            _ControlWheel3D.BringToFront();
+            _ControlWheel3D.Update();
+            _ControlWheel.Update();
+            _ControlArrow.Update();
+        }
+        public void SendToBack()
+        {
+            _ControlWheel3D.SendToBack();
+            _ControlWheel3D.Update();
+            _ControlWheel.Update();
+            _ControlArrow.Update();
+        }
         private Point[] GetPictureBoxPoints()
         {
             Point wheelPoint = new Point(0, 0);
@@ -177,5 +191,6 @@ namespace MagicWheel
             }
             _ControlArrow.Visible = true;
         }
+        
     }
 }

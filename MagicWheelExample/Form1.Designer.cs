@@ -112,12 +112,14 @@
             this.checkBox24 = new System.Windows.Forms.CheckBox();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.checkBox25 = new System.Windows.Forms.CheckBox();
+            this.label24 = new System.Windows.Forms.Label();
             this.button18 = new System.Windows.Forms.Button();
+            this.textBox10 = new System.Windows.Forms.TextBox();
             this.button19 = new System.Windows.Forms.Button();
             this.label20 = new System.Windows.Forms.Label();
-            this.label24 = new System.Windows.Forms.Label();
-            this.textBox10 = new System.Windows.Forms.TextBox();
+            this.checkBox25 = new System.Windows.Forms.CheckBox();
+            this.button20 = new System.Windows.Forms.Button();
+            this.button21 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -420,7 +422,7 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.groupBox1.Controls.Add(this.checkBox14);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.checkBox13);
@@ -532,7 +534,7 @@
             // 
             // groupBox4
             // 
-            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.groupBox4.Controls.Add(this.label5);
             this.groupBox4.Controls.Add(this.label1);
             this.groupBox4.Controls.Add(this.label2);
@@ -1004,6 +1006,7 @@
             // 
             // groupBox8
             // 
+            this.groupBox8.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.groupBox8.Controls.Add(this.checkBox24);
             this.groupBox8.Controls.Add(this.checkBox20);
             this.groupBox8.Controls.Add(this.checkBox23);
@@ -1023,7 +1026,7 @@
             // 
             // groupBox9
             // 
-            this.groupBox9.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox9.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.groupBox9.Controls.Add(this.label24);
             this.groupBox9.Controls.Add(this.button18);
             this.groupBox9.Controls.Add(this.textBox10);
@@ -1037,18 +1040,14 @@
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Center Dot";
             // 
-            // checkBox25
+            // label24
             // 
-            this.checkBox25.AutoSize = true;
-            this.checkBox25.Checked = true;
-            this.checkBox25.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox25.Location = new System.Drawing.Point(6, 19);
-            this.checkBox25.Name = "checkBox25";
-            this.checkBox25.Size = new System.Drawing.Size(76, 17);
-            this.checkBox25.TabIndex = 62;
-            this.checkBox25.Text = "Dot Visible";
-            this.checkBox25.UseVisualStyleBackColor = true;
-            this.checkBox25.CheckedChanged += new System.EventHandler(this.CheckBox25_CheckedChanged);
+            this.label24.AutoSize = true;
+            this.label24.Location = new System.Drawing.Point(87, 39);
+            this.label24.Name = "label24";
+            this.label24.Size = new System.Drawing.Size(47, 13);
+            this.label24.TabIndex = 74;
+            this.label24.Text = "Dot Size";
             // 
             // button18
             // 
@@ -1060,6 +1059,14 @@
             this.button18.TabIndex = 68;
             this.button18.UseVisualStyleBackColor = false;
             // 
+            // textBox10
+            // 
+            this.textBox10.Location = new System.Drawing.Point(89, 55);
+            this.textBox10.Name = "textBox10";
+            this.textBox10.Size = new System.Drawing.Size(60, 20);
+            this.textBox10.TabIndex = 73;
+            this.textBox10.Text = "2";
+            // 
             // button19
             // 
             this.button19.Location = new System.Drawing.Point(6, 55);
@@ -1068,7 +1075,7 @@
             this.button19.TabIndex = 67;
             this.button19.Text = "...";
             this.button19.UseVisualStyleBackColor = true;
-            this.button19.Click += new System.EventHandler(this.Button19_Click);
+            this.button19.Click += new System.EventHandler(this.CenterDotColor_Click);
             // 
             // label20
             // 
@@ -1079,28 +1086,46 @@
             this.label20.TabIndex = 69;
             this.label20.Text = "Center Color";
             // 
-            // label24
+            // checkBox25
             // 
-            this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(87, 39);
-            this.label24.Name = "label24";
-            this.label24.Size = new System.Drawing.Size(47, 13);
-            this.label24.TabIndex = 74;
-            this.label24.Text = "Dot Size";
+            this.checkBox25.AutoSize = true;
+            this.checkBox25.Checked = true;
+            this.checkBox25.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox25.Location = new System.Drawing.Point(6, 19);
+            this.checkBox25.Name = "checkBox25";
+            this.checkBox25.Size = new System.Drawing.Size(76, 17);
+            this.checkBox25.TabIndex = 62;
+            this.checkBox25.Text = "Dot Visible";
+            this.checkBox25.UseVisualStyleBackColor = true;
+            this.checkBox25.CheckedChanged += new System.EventHandler(this.CenterDotVisible_CheckedChanged);
             // 
-            // textBox10
+            // button20
             // 
-            this.textBox10.Location = new System.Drawing.Point(89, 55);
-            this.textBox10.Name = "textBox10";
-            this.textBox10.Size = new System.Drawing.Size(60, 20);
-            this.textBox10.TabIndex = 73;
-            this.textBox10.Text = "2";
+            this.button20.Location = new System.Drawing.Point(375, 435);
+            this.button20.Name = "button20";
+            this.button20.Size = new System.Drawing.Size(74, 24);
+            this.button20.TabIndex = 27;
+            this.button20.Text = "SendtoBack";
+            this.button20.UseVisualStyleBackColor = true;
+            this.button20.Click += new System.EventHandler(this.SendtoBack_Click);
+            // 
+            // button21
+            // 
+            this.button21.Location = new System.Drawing.Point(375, 411);
+            this.button21.Name = "button21";
+            this.button21.Size = new System.Drawing.Size(74, 24);
+            this.button21.TabIndex = 51;
+            this.button21.Text = "BringtoFront";
+            this.button21.UseVisualStyleBackColor = true;
+            this.button21.Click += new System.EventHandler(this.BringtoFront_Click);
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(706, 537);
+            this.Controls.Add(this.button21);
+            this.Controls.Add(this.button20);
             this.Controls.Add(this.groupBox9);
             this.Controls.Add(this.groupBox8);
             this.Controls.Add(this.groupBox7);
@@ -1227,6 +1252,8 @@
         private System.Windows.Forms.Button button19;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.CheckBox checkBox25;
+        private System.Windows.Forms.Button button20;
+        private System.Windows.Forms.Button button21;
     }
 }
 

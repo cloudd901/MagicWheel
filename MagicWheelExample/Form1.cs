@@ -16,6 +16,8 @@ namespace MagicWheelExample
         public Form1()
         {
             InitializeComponent();
+            SetStyle(ControlStyles.SupportsTransparentBackColor, true);
+            SetStyle(ControlStyles.UserPaint, true);
             wheel = new Wheel(this);
             wheel._WheelProperties.ForceUniqueEntryColors = true;
             wheel.AllowExceptions = false;
@@ -505,7 +507,7 @@ namespace MagicWheelExample
 
         #endregion
 
-        private void CheckBox25_CheckedChanged(object sender, EventArgs e)
+        private void CenterDotVisible_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox25.Checked)
             {
@@ -519,11 +521,21 @@ namespace MagicWheelExample
             }
         }
 
-        private void Button19_Click(object sender, EventArgs e)
+        private void CenterDotColor_Click(object sender, EventArgs e)
         {
             DialogResult result = colorDialog1.ShowDialog();
             if (result == DialogResult.OK)
             { button18.BackColor = colorDialog1.Color; }
+        }
+
+        private void BringtoFront_Click(object sender, EventArgs e)
+        {
+            wheel.BringToFront();
+        }
+
+        private void SendtoBack_Click(object sender, EventArgs e)
+        {
+            wheel.SendToBack();
         }
     }
 }
