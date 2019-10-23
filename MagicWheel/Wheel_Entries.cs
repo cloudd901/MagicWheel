@@ -8,7 +8,7 @@ namespace MagicWheel
     {
         public int EntryAdd(Entry entry)
         {
-            if (IsSpinning) { return -1; }
+            if (IsSpinning) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy"); } else { return -1; } }
             if (entry.UniqueID == -1)
             { if (EntryList.Count() == 0) { entry.UniqueID = 0; } else { entry.UniqueID = EntryList.Last().UniqueID + 1; } }
 
@@ -43,15 +43,15 @@ namespace MagicWheel
         }
         public bool EntryRemove(int UniqueID)
         {
-            if (IsSpinning) { return false; }
+            if (IsSpinning) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy"); } else { return false; } }
             try { EntryList.RemoveAt(EntryList.FindIndex(x => x.UniqueID == UniqueID)); return true; }
             catch { return false; }
         }
         public void EntriesClear()
         {
-            if (IsSpinning) { return; }
+            if (IsSpinning) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy"); } else { return; } }
             EntryList.Clear();
-            arrowImage = null;
+            _WheelProperties.arrowImage = null;
             wheelImage = null;
             _ControlWheel.Image = null;
             _ControlArrow.Image = null;

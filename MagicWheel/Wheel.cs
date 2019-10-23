@@ -15,7 +15,11 @@ namespace MagicWheel
     }
     public class WheelProperties
     {
-        public WheelText ShowWheelText { get; set; } = WheelText.NameAndID;
+        public ArrowPosition ArrowPosition { get; set; } = ArrowPosition.Top;
+        public Image ArrowImage { get => arrowImage; set { arrowImage = value; isNewArrowImage = true; } }
+        internal Image arrowImage = null;
+        internal bool isNewArrowImage = false;
+        public WheelText TextToShow { get; set; } = WheelText.NameAndID;
         public bool ForceUniqueEntryColors { get; set; } = false;
         public Color LineColor { get; set; } = Color.Black;
         public float LineWidth { get; set; } = 1f;
@@ -29,7 +33,7 @@ namespace MagicWheel
         public int UniqueID { get; set; } = -1;
         public string Name { get; set; }
         public Color Aura { get; set; } = Color.White;
-        public float WheelLocation { get; set; } = 0; //Updated upon drawing
+        internal float WheelLocation { get; set; } = 0;
     }
     public enum WheelText
     {
@@ -38,7 +42,7 @@ namespace MagicWheel
         ID = 2,
         None = 3
     }
-    public enum ArrowLocation
+    public enum ArrowPosition
     {
         Top=0,
         Right=1,
@@ -80,15 +84,13 @@ namespace MagicWheel
 
         public List<Entry> EntryList { get; } = new List<Entry>();
 
+        public bool AllowExceptions { get; set; } = true;
         public bool IsSpinning { get; private set; } = false;
         private bool spinStop = false;
 
         private Image wheelImage = null;
-        public Image ArrowImage { get => arrowImage; set {arrowImage = value; isNewArrowImage = true; } }
-        private Image arrowImage = null;
-        private bool isNewArrowImage = false;
-        public ArrowLocation ArrowLocation { get; set; } = ArrowLocation.Top;
-        private ArrowLocation currentArrowDirection = ArrowLocation.Top;
+
+        private ArrowPosition currentArrowDirection = ArrowPosition.Top;
 
         public Wheel(Form contentForm)
         {
@@ -103,22 +105,22 @@ namespace MagicWheel
             _ControlWheel.Left = (int)_WheelSize.Left;
             _ControlWheel.ClientSize = new Size(_WheelSize.Diameter, _WheelSize.Diameter);
             _ControlWheel.Visible = true;
-            if (ArrowLocation == ArrowLocation.Top)
+            if (_WheelProperties.ArrowPosition == ArrowPosition.Top)
             {
                 _ControlArrow.Top = 0;
                 _ControlArrow.Left = (int)_WheelSize.Center.X - 10;
             }
-            else if (ArrowLocation == ArrowLocation.Right)
+            else if (_WheelProperties.ArrowPosition == ArrowPosition.Right)
             {
                 _ControlArrow.Top = (int)_WheelSize.Center.X - 10;
                 _ControlArrow.Left = (int)_WheelSize.Diameter - 20;
             }
-            else if (ArrowLocation == ArrowLocation.Bottom)
+            else if (_WheelProperties.ArrowPosition == ArrowPosition.Bottom)
             {
                 _ControlArrow.Top = (int)_WheelSize.Diameter - 20;
                 _ControlArrow.Left = (int)_WheelSize.Center.X - 10;
             }
-            else if (ArrowLocation == ArrowLocation.Left)
+            else if (_WheelProperties.ArrowPosition == ArrowPosition.Left)
             {
                 _ControlArrow.Top = (int)_WheelSize.Center.X - 10;
                 _ControlArrow.Left = 0;

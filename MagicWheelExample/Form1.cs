@@ -18,6 +18,7 @@ namespace MagicWheelExample
             InitializeComponent();
             wheel = new Wheel(this);
             wheel._WheelProperties.ForceUniqueEntryColors = true;
+            wheel.AllowExceptions = false;
             wheel.WheelSpinCall += Wheel_WheelSpinCall;
             wheel.WheelStopCall += Wheel_WheelStopCall;
         }
@@ -84,25 +85,25 @@ namespace MagicWheelExample
         #region Basics
         private void Spin_Click(object sender, EventArgs e)
         {
-            SpinPowerType spt;
+            SpinPowerType power;
             int strength = 5;
-            if (checkBox1.Checked) { spt = SpinPowerType.Weak; }
-            else if (checkBox2.Checked) { spt = SpinPowerType.Average; }
-            else if (checkBox3.Checked) { spt = SpinPowerType.Strong; }
-            else if (checkBox4.Checked) { spt = SpinPowerType.Super; }
-            else if (checkBox5.Checked) { spt = SpinPowerType.Random; }
-            else if (checkBox6.Checked) { spt = SpinPowerType.Manual; strength = int.Parse(textBox2.Text); }
-            else { checkBox5.Checked = true; spt = SpinPowerType.Random; }
+            if (checkBox1.Checked) { power = SpinPowerType.Weak; }
+            else if (checkBox2.Checked) { power = SpinPowerType.Average; }
+            else if (checkBox3.Checked) { power = SpinPowerType.Strong; }
+            else if (checkBox4.Checked) { power = SpinPowerType.Super; }
+            else if (checkBox5.Checked) { power = SpinPowerType.Random; }
+            else if (checkBox6.Checked) { power = SpinPowerType.Manual; strength = int.Parse(textBox2.Text); }
+            else { checkBox5.Checked = true; power = SpinPowerType.Random; }
 
-            SpinDirection sd;
-            if (checkBox13.Checked) { sd = SpinDirection.Clockwise; }
-            else { sd = SpinDirection.CounterClockwise; }
+            SpinDirection direction;
+            if (checkBox13.Checked) { direction = SpinDirection.Clockwise; }
+            else { direction = SpinDirection.CounterClockwise; }
 
-            new Thread(() => { wheel.Spin(sd, spt, strength); }).Start();
+            new Thread(() => { wheel.Spin(direction, power, strength); }).Start();
         }
         private void Draw_Click(object sender, EventArgs e)
         {
-            if (checkBox12.Checked) { wheel.ArrowImage = pictureBox1.Image; }
+            if (checkBox12.Checked) { wheel._WheelProperties.ArrowImage = pictureBox1.Image; }
 
             wheel._WheelProperties.TextFontFamily = textBox7.Text;
             wheel._WheelProperties.TextColorAuto = checkBox19.Checked;
@@ -313,7 +314,7 @@ namespace MagicWheelExample
                 checkBox9.Checked = false;
                 checkBox10.Checked = false;
                 checkBox11.Checked = false;
-                wheel.ArrowLocation = ArrowLocation.Top;
+                wheel._WheelProperties.ArrowPosition = ArrowPosition.Top;
             }
         }
         private void Right_CheckedChanged(object sender, EventArgs e)
@@ -323,7 +324,7 @@ namespace MagicWheelExample
                 checkBox8.Checked = false;
                 checkBox10.Checked = false;
                 checkBox11.Checked = false;
-                wheel.ArrowLocation = ArrowLocation.Right;
+                wheel._WheelProperties.ArrowPosition = ArrowPosition.Right;
             }
         }
         private void Left_CheckedChanged(object sender, EventArgs e)
@@ -333,7 +334,7 @@ namespace MagicWheelExample
                 checkBox9.Checked = false;
                 checkBox8.Checked = false;
                 checkBox11.Checked = false;
-                wheel.ArrowLocation = ArrowLocation.Left;
+                wheel._WheelProperties.ArrowPosition = ArrowPosition.Left;
             }
         }
         private void Bottom_CheckedChanged(object sender, EventArgs e)
@@ -343,7 +344,7 @@ namespace MagicWheelExample
                 checkBox9.Checked = false;
                 checkBox10.Checked = false;
                 checkBox8.Checked = false;
-                wheel.ArrowLocation = ArrowLocation.Bottom;
+                wheel._WheelProperties.ArrowPosition = ArrowPosition.Bottom;
             }
         }
         private void Icon_Click(object sender, EventArgs e)
@@ -365,7 +366,7 @@ namespace MagicWheelExample
                 checkBox15.Checked = false;
                 checkBox16.Checked = false;
                 checkBox18.Checked = false;
-                wheel._WheelProperties.ShowWheelText = WheelText.NameAndID;
+                wheel._WheelProperties.TextToShow = WheelText.NameAndID;
             }
         }
         private void Name_CheckedChanged(object sender, EventArgs e)
@@ -375,7 +376,7 @@ namespace MagicWheelExample
                 checkBox17.Checked = false;
                 checkBox16.Checked = false;
                 checkBox18.Checked = false;
-                wheel._WheelProperties.ShowWheelText = WheelText.Name;
+                wheel._WheelProperties.TextToShow = WheelText.Name;
             }
         }
         private void ID_CheckedChanged(object sender, EventArgs e)
@@ -385,7 +386,7 @@ namespace MagicWheelExample
                 checkBox15.Checked = false;
                 checkBox17.Checked = false;
                 checkBox18.Checked = false;
-                wheel._WheelProperties.ShowWheelText = WheelText.ID;
+                wheel._WheelProperties.TextToShow = WheelText.ID;
             }
         }
         private void None_CheckedChanged(object sender, EventArgs e)
@@ -395,7 +396,7 @@ namespace MagicWheelExample
                 checkBox15.Checked = false;
                 checkBox16.Checked = false;
                 checkBox17.Checked = false;
-                wheel._WheelProperties.ShowWheelText = WheelText.None;
+                wheel._WheelProperties.TextToShow = WheelText.None;
             }
         }
         private void FontAutoColor_CheckedChanged(object sender, EventArgs e)

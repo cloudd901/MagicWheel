@@ -5,6 +5,11 @@ VisualStudioVersion = 16.0.29306.81
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagicWheel", "MagicWheel\MagicWheel.csproj", "{7914ED16-0D6E-4670-8AD2-119239748B76}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MagicWheelExample", "MagicWheelExample\MagicWheelExample.csproj", "{C4F82829-848D-4F16-A0C5-A696DD732DC7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7914ED16-0D6E-4670-8AD2-119239748B76} = {7914ED16-0D6E-4670-8AD2-119239748B76}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +20,10 @@ Global
 		{7914ED16-0D6E-4670-8AD2-119239748B76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7914ED16-0D6E-4670-8AD2-119239748B76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7914ED16-0D6E-4670-8AD2-119239748B76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4F82829-848D-4F16-A0C5-A696DD732DC7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4F82829-848D-4F16-A0C5-A696DD732DC7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4F82829-848D-4F16-A0C5-A696DD732DC7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4F82829-848D-4F16-A0C5-A696DD732DC7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -9,6 +9,7 @@ namespace MagicWheel
     {
         public void Draw(PointF center, float radius)
         {
+            if (radius < 1) { if (AllowExceptions) { throw new ArgumentOutOfRangeException ("Radius must be greater than 1"); } else { return; } }
             _WheelSize.Left = center.X - radius;
             _WheelSize.Top = center.Y - radius;
             _WheelSize.Radius = radius;
@@ -18,6 +19,7 @@ namespace MagicWheel
         }
         public void Draw(int left, int top, float radius)
         {
+            if (radius < 1) { if (AllowExceptions) { throw new ArgumentOutOfRangeException("Radius must be greater than 1"); } else { return; } }
             _WheelSize.Left = left;
             _WheelSize.Top = top;
             _WheelSize.Radius = radius;
@@ -27,10 +29,10 @@ namespace MagicWheel
         }
         private void DrawArrow()
         {
-            if (arrowImage == null)
+            if (_WheelProperties.arrowImage == null)
             {
-                arrowImage = new Bitmap(20, 20);
-                using (Graphics graphics = Graphics.FromImage(arrowImage))
+                _WheelProperties.arrowImage = new Bitmap(20, 20);
+                using (Graphics graphics = Graphics.FromImage(_WheelProperties.arrowImage))
                 {
                     graphics.SmoothingMode = SmoothingMode.AntiAlias;
                     graphics.CompositingQuality = CompositingQuality.HighQuality;
@@ -38,13 +40,13 @@ namespace MagicWheel
 
                     graphics.FillPolygon(Brushes.Black, new Point[] { new Point(0, 0), new Point(20, 0), new Point(10, 12), });
                     graphics.FillPolygon(Brushes.White, new Point[] { new Point(5, 2), new Point(15, 2), new Point(10, 5), });
-                    graphics.DrawImage(arrowImage, new Point(0, 0));
+                    graphics.DrawImage(_WheelProperties.arrowImage, new Point(0, 0));
                 }
-                _ControlArrow.Image = arrowImage;
+                _ControlArrow.Image = _WheelProperties.arrowImage;
             }
-            else { _ControlArrow.Image = arrowImage; }
+            else { _ControlArrow.Image = _WheelProperties.arrowImage; }
 
-            if (ArrowLocation != currentArrowDirection || isNewArrowImage)
+            if (_WheelProperties.ArrowPosition != currentArrowDirection || _WheelProperties.isNewArrowImage)
             {
                 _ControlArrow.Visible = false;
                 Bitmap newImage = new Bitmap(20, 20);
@@ -59,53 +61,54 @@ namespace MagicWheel
                     rotationMatrix.RotateAt(0, new PointF(10, 10));
                     graphics.Transform = rotationMatrix;
 
-                    if (currentArrowDirection == ArrowLocation.Top || isNewArrowImage)
+                    if (currentArrowDirection == ArrowPosition.Top || _WheelProperties.isNewArrowImage)
                     {
-                        rotationMatrix.RotateAt(90 * (long)ArrowLocation, new PointF(10, 10));
+                        rotationMatrix.RotateAt(90 * (long)_WheelProperties.ArrowPosition, new PointF(10, 10));
                     }
-                    else if (currentArrowDirection == ArrowLocation.Right)
+                    else if (currentArrowDirection == ArrowPosition.Right)
                     {
-                        if (ArrowLocation == ArrowLocation.Bottom)
+                        if (_WheelProperties.ArrowPosition == ArrowPosition.Bottom)
                         { rotationMatrix.RotateAt(90, new PointF(10, 10)); }
-                        if (ArrowLocation == ArrowLocation.Left)
+                        if (_WheelProperties.ArrowPosition == ArrowPosition.Left)
                         { rotationMatrix.RotateAt(180, new PointF(10, 10)); }
-                        if (ArrowLocation == ArrowLocation.Top)
+                        if (_WheelProperties.ArrowPosition == ArrowPosition.Top)
                         { rotationMatrix.RotateAt(270, new PointF(10, 10)); }
                     }
-                    else if (currentArrowDirection == ArrowLocation.Bottom)
+                    else if (currentArrowDirection == ArrowPosition.Bottom)
                     {
-                        if (ArrowLocation == ArrowLocation.Left)
+                        if (_WheelProperties.ArrowPosition == ArrowPosition.Left)
                         { rotationMatrix.RotateAt(90, new PointF(10, 10)); }
-                        if (ArrowLocation == ArrowLocation.Top)
+                        if (_WheelProperties.ArrowPosition == ArrowPosition.Top)
                         { rotationMatrix.RotateAt(180, new PointF(10, 10)); }
-                        if (ArrowLocation == ArrowLocation.Right)
+                        if (_WheelProperties.ArrowPosition == ArrowPosition.Right)
                         { rotationMatrix.RotateAt(270, new PointF(10, 10)); }
                     }
-                    else if (currentArrowDirection == ArrowLocation.Left)
+                    else if (currentArrowDirection == ArrowPosition.Left)
                     {
-                        if (ArrowLocation == ArrowLocation.Top)
+                        if (_WheelProperties.ArrowPosition == ArrowPosition.Top)
                         { rotationMatrix.RotateAt(90, new PointF(10, 10)); }
-                        if (ArrowLocation == ArrowLocation.Right)
+                        if (_WheelProperties.ArrowPosition == ArrowPosition.Right)
                         { rotationMatrix.RotateAt(180, new PointF(10, 10)); }
-                        if (ArrowLocation == ArrowLocation.Bottom)
+                        if (_WheelProperties.ArrowPosition == ArrowPosition.Bottom)
                         { rotationMatrix.RotateAt(270, new PointF(10, 10)); }
                     }
-                    currentArrowDirection = ArrowLocation;
+                    currentArrowDirection = _WheelProperties.ArrowPosition;
 
                     graphics.Clear(_ControlArrow.BackColor);
                     graphics.Transform = rotationMatrix;
-                    graphics.DrawImage(arrowImage, new Point(0, 0));
+                    graphics.DrawImage(_WheelProperties.arrowImage, new Point(0, 0));
                 }
-                arrowImage = newImage;
-                _ControlArrow.Image = arrowImage;
+                _WheelProperties.arrowImage = newImage;
+                _ControlArrow.Image = _WheelProperties.arrowImage;
                 _ControlArrow.Visible = true;
-                isNewArrowImage = false;
+                _WheelProperties.isNewArrowImage = false;
             }
             _ControlArrow.Refresh();
         }
         private void DrawWheel()
         {
             int entries = EntryList.Count;
+            if (entries < 2) { if (AllowExceptions) { throw new IndexOutOfRangeException("Must have more than two Entries"); } else { return; } }
             SetPictureBoxes();
             wheelImage = new Bitmap(_WheelSize.Diameter, _WheelSize.Diameter);
             Image namesImage = new Bitmap(_WheelSize.Diameter, _WheelSize.Diameter);
@@ -125,12 +128,8 @@ namespace MagicWheel
                 float currentangle = angle;
 
                 List<PointF> pointList = new List<PointF>();
-                //_locationData.Clear();
-                //_locationData.Add(0);
-                //EntryList[0].WheelLocation = 0;
                 for (int i = 0; i <= entries-1; i++)
                 {
-                    //if (currentangle != 360) { _locationData.Add(currentangle); }
                     EntryList[i].WheelLocation = currentangle - angle;
                     Color randomColor = Color.FromArgb(r.Next(256), r.Next(256), r.Next(256));
                     if (i == 0) { randomColor = Color.White; }
@@ -145,7 +144,7 @@ namespace MagicWheel
 
                 graphics.DrawEllipse(pen, 1, 1, _WheelSize.Diameter-2, _WheelSize.Diameter-2);
 
-                if (_WheelProperties.ShowWheelText != WheelText.None)
+                if (_WheelProperties.TextToShow != WheelText.None)
                 {
                     using (Graphics graphicsNames = Graphics.FromImage(wheelImage))
                     {
@@ -235,9 +234,9 @@ namespace MagicWheel
 
                             drawFont = new Font(_WheelProperties.TextFontFamily, GetCorrectSize(EntryList[i].Name), _WheelProperties.TextFontStyle);
                             string drawText = "";
-                            if (_WheelProperties.ShowWheelText == WheelText.NameAndID) { drawText = $"{EntryList[i].Name}_{EntryList[i].UniqueID}"; }
-                            else if (_WheelProperties.ShowWheelText == WheelText.Name) { drawText = $"{EntryList[i].Name}"; }
-                            else if (_WheelProperties.ShowWheelText == WheelText.ID) { drawText = $"{EntryList[i].UniqueID}"; }
+                            if (_WheelProperties.TextToShow == WheelText.NameAndID) { drawText = $"{EntryList[i].Name}_{EntryList[i].UniqueID}"; }
+                            else if (_WheelProperties.TextToShow == WheelText.Name) { drawText = $"{EntryList[i].Name}"; }
+                            else if (_WheelProperties.TextToShow == WheelText.ID) { drawText = $"{EntryList[i].UniqueID}"; }
                             graphicsNames.DrawString(drawText, drawFont, brush, midPoint, StringFormat.GenericTypographic);
                         }
                         graphicsNames.DrawImage(namesImage, new Point(0, 0));
