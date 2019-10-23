@@ -27,6 +27,13 @@ namespace MagicWheel
         public FontStyle TextFontStyle { get; set; } = FontStyle.Regular;
         public Color TextColor { get; set; } = Color.Black;
         public bool TextColorAuto { get; set; } = true;
+        public bool ShadowVisible { get; set; } = true;
+        public Color ShadowColor { get; set; } = Color.DarkGray;
+        public ShadowPosition ShadowPosition { get; set; } = ShadowPosition.BottomRight;
+        public int ShadowLength { get; set; } = 6;
+        public bool CenterDotVisible { get; set; } = true;
+        public Color CenterDotColor { get; set; } = Color.DarkGray;
+        public int CenterDotSize { get; set; } = 2;
     }
     public class Entry
     {
@@ -63,6 +70,13 @@ namespace MagicWheel
         Clockwise = 0,
         CounterClockwise = 1
     }
+    public enum ShadowPosition
+    {
+        BottomRight = 0,
+        BottomLeft = 1,
+        TopLeft = 2,
+        TopRight = 3
+    }
     public partial class Wheel
     {
         public delegate void WheelSpinInfoEventHandler(Entry entry, string[] spinInfo);
@@ -71,13 +85,18 @@ namespace MagicWheel
         public delegate void WheelStopInfoEventHandler(Entry entry);
         public event WheelStopInfoEventHandler WheelStopCall;
 
+        private Form ContentWindow;
+
         private readonly PictureBox _ControlWheel = new PictureBox()
         { BackColor = Color.Transparent, Location = new Point(0, 0), Size = new Size(0, 0), BorderStyle = BorderStyle.None, Visible = false };
+        private readonly PictureBox _ControlWheel3D = new PictureBox()
+        { BackColor = Color.Transparent, Location = new Point(0, 0), Size = new Size(0, 0), BorderStyle = BorderStyle.None, Visible = false };
+
+        private Image wheelImage = null;
+        private Image wheelImage3D = null;
 
         private readonly PictureBox _ControlArrow = new PictureBox()
         { BackColor = Color.Transparent, Location = new Point(0, 0), ClientSize = new Size(20, 20), BorderStyle = BorderStyle.None, Visible = false };
-
-        private Form ContentWindow;
 
         private readonly WheelSize _WheelSize = new WheelSize();
         public readonly WheelProperties _WheelProperties = new WheelProperties();
@@ -88,22 +107,53 @@ namespace MagicWheel
         public bool IsSpinning { get; private set; } = false;
         private bool spinStop = false;
 
-        private Image wheelImage = null;
-
         private ArrowPosition currentArrowDirection = ArrowPosition.Top;
 
         public Wheel(Form contentForm)
         {
             ContentWindow = contentForm ?? throw new NullReferenceException("A valid control must be used.");
-            ContentWindow.Controls.Add(_ControlWheel);
+            ContentWindow.Controls.Add(_ControlWheel3D);
+            _ControlWheel3D.Controls.Add(_ControlWheel);
             _ControlWheel.Controls.Add(_ControlArrow);
         }
 
+        private Point[] GetPictureBoxPoints()
+        {
+            Point wheelPoint = new Point(0, 0);
+            Point shadowPoint = new Point(0, 0);
+            if (_WheelProperties.ShadowVisible)
+            {
+                shadowPoint = new Point(_WheelProperties.ShadowLength, _WheelProperties.ShadowLength);
+                if (_WheelProperties.ShadowPosition == ShadowPosition.BottomLeft)
+                {
+                    shadowPoint = new Point(0, _WheelProperties.ShadowLength);
+                    wheelPoint = new Point(_WheelProperties.ShadowLength, 0);
+                }
+                else if (_WheelProperties.ShadowPosition == ShadowPosition.TopLeft)
+                {
+                    shadowPoint = new Point(0, 0);
+                    wheelPoint = new Point(_WheelProperties.ShadowLength, _WheelProperties.ShadowLength);
+                }
+                else if (_WheelProperties.ShadowPosition == ShadowPosition.TopRight)
+                {
+                    shadowPoint = new Point(_WheelProperties.ShadowLength, 0);
+                    wheelPoint = new Point(0, _WheelProperties.ShadowLength);
+                }
+            }
+            return new Point[] { shadowPoint, wheelPoint };
+        }
         private void SetPictureBoxes()
         {
-            _ControlWheel.Top = (int)_WheelSize.Top;
-            _ControlWheel.Left = (int)_WheelSize.Left;
-            _ControlWheel.ClientSize = new Size(_WheelSize.Diameter, _WheelSize.Diameter);
+            Point[] controlPoints = GetPictureBoxPoints();
+
+            _ControlWheel3D.Top = (int)_WheelSize.Top;
+            _ControlWheel3D.Left = (int)_WheelSize.Left;
+            _ControlWheel3D.ClientSize = new Size(_WheelSize.Diameter + _WheelProperties.ShadowLength, _WheelSize.Diameter + _WheelProperties.ShadowLength);
+            _ControlWheel3D.Visible = true;
+
+            _ControlWheel.Top = controlPoints[1].Y;
+            _ControlWheel.Left = controlPoints[1].X;
+            _ControlWheel.ClientSize = new Size(_WheelSize.Diameter + _WheelProperties.ShadowLength, _WheelSize.Diameter + _WheelProperties.ShadowLength);
             _ControlWheel.Visible = true;
             if (_WheelProperties.ArrowPosition == ArrowPosition.Top)
             {

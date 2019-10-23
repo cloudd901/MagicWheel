@@ -111,6 +111,14 @@ namespace MagicWheelExample
             wheel._WheelProperties.LineColor = button15.BackColor;
             wheel._WheelProperties.LineWidth = int.Parse(textBox8.Text);
 
+            wheel._WheelProperties.ShadowVisible = checkBox20.Checked;
+            wheel._WheelProperties.ShadowColor = button17.BackColor;
+            wheel._WheelProperties.ShadowLength = int.Parse(textBox9.Text);
+
+            wheel._WheelProperties.CenterDotVisible = checkBox25.Checked;
+            wheel._WheelProperties.CenterDotColor = button18.BackColor;
+            wheel._WheelProperties.CenterDotSize = int.Parse(textBox10.Text);
+
             wheel.Draw(int.Parse(textBox3.Text), int.Parse(textBox4.Text), int.Parse(textBox6.Text));
         }
         private void Stop_Click(object sender, EventArgs e)
@@ -425,5 +433,97 @@ namespace MagicWheelExample
             { button15.BackColor = colorDialog1.Color; }
         }
         #endregion
+
+        #region Shadow
+        private void ShadowVisible_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox20.Checked)
+            {
+                button16.Enabled = true;
+                textBox9.Enabled = true;
+                checkBox21.Enabled = true;
+                checkBox22.Enabled = true;
+                checkBox23.Enabled = true;
+                checkBox24.Enabled = true;
+            }
+            else
+            {
+                button16.Enabled = false;
+                textBox9.Enabled = false;
+                checkBox21.Enabled = false;
+                checkBox22.Enabled = false;
+                checkBox23.Enabled = false;
+                checkBox24.Enabled = false;
+            }
+        }
+        private void ShadowColor_Click(object sender, EventArgs e)
+        {
+            DialogResult result = colorDialog1.ShowDialog();
+            if (result == DialogResult.OK)
+            { button17.BackColor = colorDialog1.Color; }
+        }
+        private void CheckBox21_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox21.Checked)
+            {
+                checkBox22.Checked = false;
+                checkBox23.Checked = false;
+                checkBox24.Checked = false;
+                wheel._WheelProperties.ShadowPosition = ShadowPosition.BottomRight;
+            }
+        }
+        private void CheckBox22_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox22.Checked)
+            {
+                checkBox21.Checked = false;
+                checkBox23.Checked = false;
+                checkBox24.Checked = false;
+                wheel._WheelProperties.ShadowPosition = ShadowPosition.BottomLeft;
+            }
+        }
+        private void CheckBox23_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox23.Checked)
+            {
+                checkBox22.Checked = false;
+                checkBox21.Checked = false;
+                checkBox24.Checked = false;
+                wheel._WheelProperties.ShadowPosition = ShadowPosition.TopLeft;
+            }
+        }
+        private void CheckBox24_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox23.Checked)
+            {
+                checkBox22.Checked = false;
+                checkBox23.Checked = false;
+                checkBox21.Checked = false;
+                wheel._WheelProperties.ShadowPosition = ShadowPosition.TopRight;
+            }
+        }
+
+        #endregion
+
+        private void CheckBox25_CheckedChanged(object sender, EventArgs e)
+        {
+            if (checkBox25.Checked)
+            {
+                button19.Enabled = true;
+                textBox10.Enabled = true;
+            }
+            else
+            {
+                button19.Enabled = false;
+                textBox10.Enabled = false;
+            }
+        }
+
+        private void Button19_Click(object sender, EventArgs e)
+        {
+            DialogResult result = colorDialog1.ShowDialog();
+            if (result == DialogResult.OK)
+            { button18.BackColor = colorDialog1.Color; }
+        }
     }
 }

@@ -111,38 +111,78 @@ namespace MagicWheel
             if (entries < 2) { if (AllowExceptions) { throw new IndexOutOfRangeException("Must have more than two Entries"); } else { return; } }
             SetPictureBoxes();
             wheelImage = new Bitmap(_WheelSize.Diameter, _WheelSize.Diameter);
-            Image namesImage = new Bitmap(_WheelSize.Diameter, _WheelSize.Diameter);
-            Random r = new Random();
             using (Graphics graphics = Graphics.FromImage(wheelImage))
             {
-                Brush brush;
+                Point[] controlPoints = GetPictureBoxPoints();
                 Pen pen = new Pen(_WheelProperties.LineColor, _WheelProperties.LineWidth);
+                
+                    
+                wheelImage3D = new Bitmap(_WheelSize.Diameter + _WheelProperties.ShadowLength, _WheelSize.Diameter + _WheelProperties.ShadowLength);
+                using (Graphics graphics3D = Graphics.FromImage(wheelImage3D))
+                {
+                    if (_WheelProperties.ShadowVisible)
+                    {
+                        graphics3D.SmoothingMode = SmoothingMode.AntiAlias;
+                        graphics3D.CompositingQuality = CompositingQuality.HighQuality;
+                        graphics3D.InterpolationMode = InterpolationMode.HighQualityBicubic;
+
+                        graphics3D.FillEllipse(new SolidBrush(_WheelProperties.ShadowColor), controlPoints[0].X, controlPoints[0].Y, _WheelSize.Diameter - 2, _WheelSize.Diameter - 2);
+                        graphics3D.DrawEllipse(pen, controlPoints[0].X, controlPoints[0].Y, _WheelSize.Diameter - 2, _WheelSize.Diameter - 2);
+
+                        graphics3D.DrawImage(wheelImage3D, new Point(0, 0));
+                    }
+
+                    _ControlWheel3D.Image = wheelImage3D;
+                    _ControlWheel3D.Refresh();
+                }
+                
+                Image namesImage = new Bitmap(_WheelSize.Diameter, _WheelSize.Diameter);
+                Random r = new Random();
+                Brush brush;
                 Font drawFont;
                 graphics.SmoothingMode = SmoothingMode.AntiAlias;
                 graphics.CompositingQuality = CompositingQuality.HighQuality;
                 graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
-                graphics.FillRectangle(new SolidBrush(ContentWindow.BackColor), new RectangleF(0, 0, _ControlWheel.Width, _ControlWheel.Height));
+                graphics.FillRectangle(new SolidBrush(Color.Transparent), new RectangleF(0, 0, _ControlWheel.Width, _ControlWheel.Height));
 
                 float angle = 360f / (float)entries;
                 float currentangle = angle;
 
                 List<PointF> pointList = new List<PointF>();
-                for (int i = 0; i <= entries-1; i++)
+                PointF linePoint;
+                for (int i = 0; i <= entries - 1; i++)
                 {
                     EntryList[i].WheelLocation = currentangle - angle;
                     Color randomColor = Color.FromArgb(r.Next(256), r.Next(256), r.Next(256));
                     if (i == 0) { randomColor = Color.White; }
                     brush = new SolidBrush(EntryList[i].Aura);
-                    PointF newPoint = new PointF((_WheelSize.Radius - 10) * (float)Math.Cos(currentangle * Math.PI / 180F) + _WheelSize.Center.X, (_WheelSize.Radius - 10) * (float)Math.Sin(currentangle * Math.PI / 180F) + _WheelSize.Center.Y);
-                    pointList.Add(newPoint);
-                    graphics.FillPie(brush, 1, 1, _WheelSize.Diameter-2, _WheelSize.Diameter-2, currentangle, angle);
-                    graphics.DrawLine(pen, _WheelSize.Center, new PointF((_WheelSize.Radius - 1) * (float)Math.Cos(currentangle * Math.PI / 180F) + _WheelSize.Center.X, (_WheelSize.Radius - 1) * (float)Math.Sin(currentangle * Math.PI / 180F) + _WheelSize.Center.Y));
+                    pointList.Add(new PointF((_WheelSize.Radius - 10) * (float)Math.Cos(currentangle * Math.PI / 180F) + _WheelSize.Center.X, (_WheelSize.Radius - 10) * (float)Math.Sin(currentangle * Math.PI / 180F) + _WheelSize.Center.Y));
 
+                    graphics.FillPie(brush, 1, 1, _WheelSize.Diameter - 2, _WheelSize.Diameter - 2, currentangle, angle);
+
+                    linePoint = new PointF((_WheelSize.Radius - 1) * (float)Math.Cos(currentangle * Math.PI / 180F) + _WheelSize.Center.X, (_WheelSize.Radius - 1) * (float)Math.Sin(currentangle * Math.PI / 180F) + _WheelSize.Center.Y);
+
+                    PointF newMidPoint;
+                    if (_WheelProperties.CenterDotVisible)
+                    { newMidPoint = MidPoint(_WheelSize.Center, linePoint, 4); }
+                    else
+                    { newMidPoint = _WheelSize.Center; }
+                    graphics.DrawLine(pen, newMidPoint, linePoint);
                     currentangle += angle;
                 }
+                linePoint = new PointF((_WheelSize.Radius - 1) * (float)Math.Cos(currentangle * Math.PI / 180F) + _WheelSize.Center.X, (_WheelSize.Radius - 1) * (float)Math.Sin(currentangle * Math.PI / 180F) + _WheelSize.Center.Y);
+                PointF newPoint = MidPoint(_WheelSize.Center, linePoint, 4);
+                graphics.DrawLine(pen, newPoint, linePoint);
 
-                graphics.DrawEllipse(pen, 1, 1, _WheelSize.Diameter-2, _WheelSize.Diameter-2);
+                if (_WheelProperties.CenterDotVisible)
+                {
+                    float centRadius = (float)(Math.Sqrt(Math.Pow((newPoint.X - _WheelSize.Center.X), 2) + Math.Pow((newPoint.Y - _WheelSize.Center.Y), 2))) * _WheelProperties.CenterDotSize;
+                    graphics.FillEllipse(new SolidBrush(_WheelProperties.CenterDotColor), _WheelSize.Center.X - (centRadius / 2), _WheelSize.Center.Y - (centRadius / 2), centRadius, centRadius);
+                    graphics.DrawEllipse(pen, _WheelSize.Center.X - (centRadius / 2), _WheelSize.Center.Y - (centRadius / 2), centRadius, centRadius);
+                }
+
+                graphics.DrawEllipse(pen, 1, 1, _WheelSize.Diameter - 2, _WheelSize.Diameter - 2);
 
                 if (_WheelProperties.TextToShow != WheelText.None)
                 {
@@ -215,10 +255,10 @@ namespace MagicWheel
                                 {
                                     int repeat = (entries / 10) - 1;
                                     if (entries > 45) { repeat += 1; }
-                                    if (entries > 55) { repeat += 2; }
-                                    if (entries > 60) { repeat += 3; }
-                                    for (int i2 = 1; i2 <= repeat; i2++)
-                                    { midPoint2 = MidPoint(midPoint2, usePoint2); }
+                                    else if (entries > 50) { repeat += 2; }
+                                    else if (entries > 55) { repeat += 3; }
+                                    else if (entries > 60) { repeat += 5; }
+                                    midPoint2 = MidPoint(usePoint2, usePoint1, repeat);
                                 }
                             }
                             midPoint = MidPoint(midPoint2, midPoint1);
@@ -242,7 +282,7 @@ namespace MagicWheel
                         graphicsNames.DrawImage(namesImage, new Point(0, 0));
                     }
                 }
-                graphics.DrawImage(wheelImage, new Point(0,0));
+                graphics.DrawImage(wheelImage, new Point(0, 0));
                 _ControlWheel.Image = wheelImage;
                 _ControlWheel.Refresh();
             }
@@ -255,11 +295,16 @@ namespace MagicWheel
             DrawArrow();
         }
 
-        private PointF MidPoint(PointF p1, PointF p2)
+        private PointF CalculateMidPoint(PointF p1, PointF p2)
         {
             p1.X -= _WheelSize.Left; p2.X += _WheelSize.Left;
-            PointF p = new PointF(0f, 0f);
-            p = new PointF ((float)((p1.X + p2.X) / 2f) , (float)((p1.Y + p2.Y) / 2f));
+            return new PointF((float)((p1.X + p2.X) / 2f), (float)((p1.Y + p2.Y) / 2f));
+        }
+        private PointF MidPoint(PointF p1, PointF p2, int cycles = 0)
+        {
+            PointF p = p2;
+            for (int i = 0; i <= cycles; i++)
+            { p = CalculateMidPoint(p1, p); }
             return p;
         }
         private int GetCorrectSize(string word)
