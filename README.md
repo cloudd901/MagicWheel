@@ -10,6 +10,8 @@ The Wheel is customizable and uses layers of PictureBoxes that get added to your
 - Draw the wheel.
 - Spin the wheel.
 
+![Icon](https://github.com/cloudd901/MagicWheel/blob/master/WheelScreen.jpg)
+
 The example script provided includes nearly all options available for the wheel.
 
 Draw
