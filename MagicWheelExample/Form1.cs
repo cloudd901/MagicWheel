@@ -18,6 +18,11 @@ namespace MagicWheelExample
             InitializeComponent();
             SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             SetStyle(ControlStyles.UserPaint, true);
+            NewWheel();
+        }
+
+        private void NewWheel()
+        {
             wheel = new Wheel(this);
             wheel._WheelProperties.ForceUniqueEntryColors = true;
             wheel.AllowExceptions = false;
@@ -32,8 +37,7 @@ namespace MagicWheelExample
             {
                 label15.Invoke((MethodInvoker)delegate
                 {
-                    if (!wheel.IsReadable(entry.Aura, Color.Black)) { label15.ForeColor = Color.White; }
-                    else { label15.ForeColor = Color.Black; }
+                    label15.ForeColor = wheel.IsReadable(entry.Aura, Color.Black) ? Color.Black : Color.White;
                     label15.Text = $"{entry.Name}\r\nTicket {entry.UniqueID}";
                     label15.BackColor = entry.Aura;
                     label15.Refresh();
@@ -41,8 +45,7 @@ namespace MagicWheelExample
             }
             else
             {
-                if (!wheel.IsReadable(entry.Aura, Color.Black)) { label15.ForeColor = Color.White; }
-                else { label15.ForeColor = Color.Black; }
+                label15.ForeColor = wheel.IsReadable(entry.Aura, Color.Black) ? Color.Black : Color.White;
                 label15.Text = $"{entry.Name}\r\nTicket {entry.UniqueID}";
                 label15.BackColor = entry.Aura;
                 label15.Refresh();
@@ -62,6 +65,7 @@ namespace MagicWheelExample
                     label3.Update();
                     label4.Text = spinInfo[3];
                     label4.Update();
+                    label15.ForeColor = wheel.IsReadable(entry.Aura, Color.Black) ? Color.Black : Color.White;
                     label15.Text = $"{entry.Name}\r\nTicket {entry.UniqueID}";
                     label15.BackColor = entry.Aura;
                     label15.Update();
@@ -77,6 +81,7 @@ namespace MagicWheelExample
                 label3.Update();
                 label4.Text = spinInfo[3];
                 label4.Update();
+                label15.ForeColor = wheel.IsReadable(entry.Aura, Color.Black) ? Color.Black : Color.White;
                 label15.Text = $"{entry.Name}\r\nTicket {entry.UniqueID}";
                 label15.BackColor = entry.Aura;
                 label15.Update();
@@ -228,7 +233,7 @@ namespace MagicWheelExample
                 for (int i = 1; i <= int.Parse(textBox5.Text); i++)
                 { wheel.EntryAdd(new Entry() { Name = textBox1.Text, Aura = button6.BackColor }); }
             }
-            Draw_Click(null, null);
+            wheel.Refresh();
         }
         private string RandomName()
         {
@@ -280,6 +285,7 @@ namespace MagicWheelExample
         private void Reset_Click(object sender, EventArgs e)
         {
             wheel.EntriesClear();
+            wheel.Refresh();
         }
         private void Sort_Click(object sender, EventArgs e)
         {
@@ -288,7 +294,7 @@ namespace MagicWheelExample
             else if (sorttype == 1)
             { wheel.EntryList.Sort((x, y) => x.Name.CompareTo(y.Name)); sorttype = 0; }
 
-            Draw_Click(null, null);
+            wheel.Refresh();
         }
         private void Random_Click(object sender, EventArgs e)
         {
@@ -312,7 +318,7 @@ namespace MagicWheelExample
                 wheel.EntryList.Add(ListtoSort[i]);
             }
 
-            Draw_Click(null, null);
+            wheel.Refresh();
         }
         #endregion
 
@@ -504,9 +510,6 @@ namespace MagicWheelExample
                 wheel._WheelProperties.ShadowPosition = ShadowPosition.TopRight;
             }
         }
-
-        #endregion
-
         private void CenterDotVisible_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBox25.Checked)
@@ -520,22 +523,31 @@ namespace MagicWheelExample
                 textBox10.Enabled = false;
             }
         }
-
         private void CenterDotColor_Click(object sender, EventArgs e)
         {
             DialogResult result = colorDialog1.ShowDialog();
             if (result == DialogResult.OK)
             { button18.BackColor = colorDialog1.Color; }
         }
+        #endregion
 
+        #region Other
         private void BringtoFront_Click(object sender, EventArgs e)
         {
             wheel.BringToFront();
         }
-
         private void SendtoBack_Click(object sender, EventArgs e)
         {
             wheel.SendToBack();
         }
+        private void Dispose_Click(object sender, EventArgs e)
+        {
+            wheel.Dispose();
+        }
+        private void New_Click(object sender, EventArgs e)
+        {
+            if (wheel.IsDisposed) { NewWheel(); }
+        }
+        #endregion
     }
 }

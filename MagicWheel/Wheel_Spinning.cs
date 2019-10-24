@@ -11,8 +11,9 @@ namespace MagicWheel
     {
         public void Spin(SpinDirection spinDirection = SpinDirection.Clockwise, SpinPowerType spinPowerType = SpinPowerType.Random, int spinStrength = 5)
         {
-            if (IsSpinning) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy"); } else { return; } }
-            if (wheelImage == null) { return; }
+            if (IsSpinning) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy."); } else { return; } }
+            if (wheelImage == null) { if (AllowExceptions) { throw new InvalidOperationException("Please initialize wheel using Draw()."); } else { return; } }
+            if (EntryList.Count <= 0) { if (AllowExceptions) { throw new IndexOutOfRangeException("Must have more than zero Entries to Spin."); } else { return; } }
 
             if (spinPowerType != SpinPowerType.Manual) { spinStrength = UpdateSpinStrength(spinPowerType); }
             else { spinStrength = spinStrength > 11 ? 11 : spinStrength < 1 ? 1 : spinStrength; }
@@ -23,12 +24,12 @@ namespace MagicWheel
                 {
                     ContentWindow.Invoke((MethodInvoker)delegate
                     {
-                        ReDraw();
+                        Refresh();
                     });
                 }
                 else
                 {
-                    ReDraw();
+                    Refresh();
                 }
             }
 
@@ -158,34 +159,37 @@ namespace MagicWheel
 
         private Entry checkAngleEntry(float angle, SpinDirection direction)
         {
-
             List<Entry> revList = EntryList.ToList();
             revList.Reverse();
 
-            if (direction == SpinDirection.Clockwise)
+            if (EntryList.Count > 1)
             {
-                float fixAngle = EntryList[0].WheelLocation - EntryList[1].WheelLocation;// _locationData[0] - _locationData[1];//ArrowLocation.Right
-                if (_WheelProperties.ArrowPosition == ArrowPosition.Bottom) { fixAngle += 90; }
-                else if (_WheelProperties.ArrowPosition == ArrowPosition.Left) { fixAngle += 180; }
-                else if (_WheelProperties.ArrowPosition == ArrowPosition.Top) { fixAngle += 270; }
-                angle -= fixAngle;
-            }
-            else
-            {
-                float fixAngle = revList[0].WheelLocation - revList[1].WheelLocation;//_locationData[0] + _locationData[1];//ArrowLocation.Right
-                if (_WheelProperties.ArrowPosition == ArrowPosition.Bottom) { fixAngle -= 90; }
-                else if (_WheelProperties.ArrowPosition == ArrowPosition.Left) { fixAngle -= 180; }
-                else if (_WheelProperties.ArrowPosition == ArrowPosition.Top) { fixAngle -= 270; }
-                angle -= fixAngle;
-                angle *= -1;
+                if (direction == SpinDirection.Clockwise)
+                {
+                    float fixAngle = EntryList[0].WheelLocation - EntryList[1].WheelLocation;// _locationData[0] - _locationData[1];//ArrowLocation.Right
+                    if (_WheelProperties.ArrowPosition == ArrowPosition.Bottom) { fixAngle += 90; }
+                    else if (_WheelProperties.ArrowPosition == ArrowPosition.Left) { fixAngle += 180; }
+                    else if (_WheelProperties.ArrowPosition == ArrowPosition.Top) { fixAngle += 270; }
+                    angle -= fixAngle;
+                }
+                else
+                {
+                    float fixAngle = revList[0].WheelLocation - revList[1].WheelLocation;//_locationData[0] + _locationData[1];//ArrowLocation.Right
+                    if (_WheelProperties.ArrowPosition == ArrowPosition.Bottom) { fixAngle -= 90; }
+                    else if (_WheelProperties.ArrowPosition == ArrowPosition.Left) { fixAngle -= 180; }
+                    else if (_WheelProperties.ArrowPosition == ArrowPosition.Top) { fixAngle -= 270; }
+                    angle -= fixAngle;
+                    angle *= -1;
+                }
             }
 
             while (angle < 0) { angle += 360; }
             while (angle > 360) { angle -= 360; }
 
             int entry = 0;
-            if (EntryList.Count <= 3)
+            if (EntryList.Count < 4)
             {
+                //List correction needed for less than 4 entries
                 for (int i = EntryList.Count - 1; EntryList.Count > i && i >= 0; i--)
                 {
                     int choice = i - 1;

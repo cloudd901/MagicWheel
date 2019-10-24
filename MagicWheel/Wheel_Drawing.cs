@@ -15,7 +15,8 @@ namespace MagicWheel
             _WheelSize.Radius = radius;
             _WheelSize.Diameter = (int)(radius * 2f);
             _WheelSize.Center = center;
-            ReDraw();
+            _WheelSize.initialized = true;
+            Refresh();
         }
         public void Draw(int left, int top, float radius)
         {
@@ -25,7 +26,8 @@ namespace MagicWheel
             _WheelSize.Radius = radius;
             _WheelSize.Diameter = (int)(radius * 2f);
             _WheelSize.Center = new PointF(radius, radius);
-            ReDraw();
+            _WheelSize.initialized = true;
+            Refresh();
         }
         private void DrawArrow()
         {
@@ -107,17 +109,21 @@ namespace MagicWheel
         }
         private void DrawWheel()
         {
+            if (!_WheelSize.initialized) { if (AllowExceptions) { throw new InvalidOperationException("Please initialize wheel using Draw()."); } else { return; } }
             int entries = EntryList.Count;
-            if (entries < 2) { if (AllowExceptions) { throw new IndexOutOfRangeException("Must have more than two Entries"); } else { return; } }
+            //if (entries < 1) { if (AllowExceptions) { throw new IndexOutOfRangeException("Must have more than one Entry"); } else { return; } }
             SetPictureBoxes();
-            wheelImage = new Bitmap(_WheelSize.Diameter, _WheelSize.Diameter);
+
+            int shadowLength = _WheelProperties.ShadowVisible ? _WheelProperties.ShadowLength : 0;
+            wheelImage = new Bitmap(_WheelSize.Diameter + shadowLength, _WheelSize.Diameter + shadowLength);
+
             using (Graphics graphics = Graphics.FromImage(wheelImage))
             {
                 Point[] controlPoints = GetPictureBoxPoints();
                 Pen pen = new Pen(_WheelProperties.LineColor, _WheelProperties.LineWidth);
                 
                     
-                wheelImage3D = new Bitmap(_WheelSize.Diameter + _WheelProperties.ShadowLength, _WheelSize.Diameter + _WheelProperties.ShadowLength);
+                wheelImage3D = new Bitmap(_WheelSize.Diameter + shadowLength, _WheelSize.Diameter + shadowLength);
                 using (Graphics graphics3D = Graphics.FromImage(wheelImage3D))
                 {
                     if (_WheelProperties.ShadowVisible)
@@ -128,7 +134,6 @@ namespace MagicWheel
 
                         graphics3D.FillEllipse(new SolidBrush(_WheelProperties.ShadowColor), controlPoints[0].X, controlPoints[0].Y, _WheelSize.Diameter - 2, _WheelSize.Diameter - 2);
                         graphics3D.DrawEllipse(pen, controlPoints[0].X, controlPoints[0].Y, _WheelSize.Diameter - 2, _WheelSize.Diameter - 2);
-                        //graphics.FillRectangle(new SolidBrush(Color.Transparent), new RectangleF(0, 0, _ControlWheel3D.Width, _ControlWheel3D.Height));
 
                         graphics3D.DrawImage(wheelImage3D, new Point(0, 0));
                     }
@@ -144,8 +149,6 @@ namespace MagicWheel
                 graphics.CompositingQuality = CompositingQuality.HighQuality;
                 graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
 
-                //graphics.FillRectangle(new SolidBrush(Color.Transparent), new RectangleF(0, 0, _ControlWheel.Width, _ControlWheel.Height));
-
                 float angle = 360f / (float)entries;
                 float currentangle = angle;
 
@@ -154,10 +157,16 @@ namespace MagicWheel
                 for (int i = 0; i <= entries - 1; i++)
                 {
                     EntryList[i].WheelLocation = currentangle - angle;
+                    pointList.Add(new PointF((_WheelSize.Radius - 10) * (float)Math.Cos(currentangle * Math.PI / 180F) + _WheelSize.Center.X, (_WheelSize.Radius - 10) * (float)Math.Sin(currentangle * Math.PI / 180F) + _WheelSize.Center.Y));
+
+                    int colorCorrection = i;
+                    //Color correction needed for less than 4 entries
+                    if (entries <= 2) { colorCorrection -= 1; if (colorCorrection < 0) { colorCorrection = entries - 1; } }
+                    else if (entries == 3) { colorCorrection -= 2; if (colorCorrection == -1) { colorCorrection = entries - 1; } else if (colorCorrection == -2) { colorCorrection = entries - 2; } }
+
                     Color randomColor = Color.FromArgb(r.Next(256), r.Next(256), r.Next(256));
                     if (i == 0) { randomColor = Color.White; }
-                    brush = new SolidBrush(EntryList[i].Aura);
-                    pointList.Add(new PointF((_WheelSize.Radius - 10) * (float)Math.Cos(currentangle * Math.PI / 180F) + _WheelSize.Center.X, (_WheelSize.Radius - 10) * (float)Math.Sin(currentangle * Math.PI / 180F) + _WheelSize.Center.Y));
+                    brush = new SolidBrush(EntryList[colorCorrection].Aura);
 
                     graphics.FillPie(brush, 1, 1, _WheelSize.Diameter - 2, _WheelSize.Diameter - 2, currentangle, angle);
 
@@ -175,14 +184,14 @@ namespace MagicWheel
                 PointF newPoint = MidPoint(_WheelSize.Center, linePoint, 4);
                 graphics.DrawLine(pen, newPoint, linePoint);
 
+                if (entries <= 0) { graphics.FillEllipse(new SolidBrush(Color.LightGray), 1, 1, _WheelSize.Diameter - 2, _WheelSize.Diameter - 2); }
+                graphics.DrawEllipse(pen, 1, 1, _WheelSize.Diameter - 2, _WheelSize.Diameter - 2);
                 if (_WheelProperties.CenterDotVisible)
                 {
                     float centRadius = (float)(Math.Sqrt(Math.Pow((newPoint.X - _WheelSize.Center.X), 2) + Math.Pow((newPoint.Y - _WheelSize.Center.Y), 2))) * _WheelProperties.CenterDotSize;
                     graphics.FillEllipse(new SolidBrush(_WheelProperties.CenterDotColor), _WheelSize.Center.X - (centRadius / 2), _WheelSize.Center.Y - (centRadius / 2), centRadius, centRadius);
                     graphics.DrawEllipse(pen, _WheelSize.Center.X - (centRadius / 2), _WheelSize.Center.Y - (centRadius / 2), centRadius, centRadius);
                 }
-
-                graphics.DrawEllipse(pen, 1, 1, _WheelSize.Diameter - 2, _WheelSize.Diameter - 2);
 
                 if (_WheelProperties.TextToShow != WheelText.None)
                 {
@@ -286,13 +295,13 @@ namespace MagicWheel
                 _ControlWheel.Image = wheelImage;
                 _ControlWheel.Refresh();
             }
+            DrawArrow();
         }
 
-        private void ReDraw()
+        public void Refresh()
         {
-            if (IsSpinning) { return; }
+            if (IsSpinning) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy."); } else { return; } }
             DrawWheel();
-            DrawArrow();
         }
 
         private PointF CalculateMidPoint(PointF p1, PointF p2)

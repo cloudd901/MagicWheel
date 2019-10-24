@@ -8,6 +8,7 @@ namespace MagicWheel
     {
         public int EntryAdd(Entry entry)
         {
+            if (IsDisposed) { if (AllowExceptions) { throw new InvalidOperationException("This Wheel has been Disposed."); } else { return -1; } }
             if (IsSpinning) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy"); } else { return -1; } }
             if (entry.UniqueID == -1)
             { if (EntryList.Count() == 0) { entry.UniqueID = 0; } else { entry.UniqueID = EntryList.Last().UniqueID + 1; } }
@@ -51,12 +52,7 @@ namespace MagicWheel
         {
             if (IsSpinning) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy"); } else { return; } }
             EntryList.Clear();
-            _WheelProperties.arrowImage = null;
-            wheelImage = null;
-            _ControlWheel.Image = null;
-            _ControlArrow.Image = null;
-            DrawWheel();
-            DrawArrow();
+            Refresh();
         }
 
         private Color ColorIncrementRnd(Color original, int change = 25)

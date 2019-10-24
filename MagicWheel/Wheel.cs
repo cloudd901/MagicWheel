@@ -12,6 +12,7 @@ namespace MagicWheel
         public float Top { get; set; }
         public float Left { get; set; }
         public PointF Center { get; set; }
+        internal bool initialized { get; set; } = false;
     }
     public class WheelProperties
     {
@@ -77,8 +78,10 @@ namespace MagicWheel
         TopLeft = 2,
         TopRight = 3
     }
-    public partial class Wheel
+    public partial class Wheel : IDisposable
     {
+        public bool IsDisposed { get; private set; } = false;
+
         public delegate void WheelSpinInfoEventHandler(Entry entry, string[] spinInfo);
         public event WheelSpinInfoEventHandler WheelSpinCall;
 
@@ -191,6 +194,34 @@ namespace MagicWheel
             }
             _ControlArrow.Visible = true;
         }
-        
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (IsDisposed)
+                return;
+
+            if (disposing)
+            {
+                EntriesClear();
+
+                wheelImage3D.Dispose();
+                wheelImage.Dispose();
+                _WheelProperties.arrowImage.Dispose();
+
+                _ControlArrow.Dispose();
+                _ControlWheel.Dispose();
+                _ControlWheel3D.Dispose();
+
+                _WheelSize.initialized = false;
+            }
+
+            IsDisposed = true;
+        }
     }
 }
