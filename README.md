@@ -5,6 +5,8 @@ I created this dll as part of another project I am working on.
 This library will create a Wheel based upon a list of Entries.
 The Wheel is customizable and uses layers of PictureBoxes that get added to your form.
 
+It is using a specific interface in IRandomTool.cs so it can be plug-n-play with my other project.
+
 - Create the wheel object.
 - Add Entries to the list.
 - Draw the wheel.
@@ -29,15 +31,19 @@ EntryList
 - EntryRemove(UniqueID);
   - Uses an ID provided by EntryAdd.
 - EntriesClear();
+  - Clears the EntryList.
+- ShuffleEntries();
+  - Randomizes the EntryList.
 
-Spin
-- Wheel.IsSpinning;
+Action
+- Wheel.IsBusy;
   - Returns true if the wheel is actively spinning.
-- Spin();
-- or Spin(SpinDirection, SpinPowerType, SpinStrength);
-  - SpinDirection can be Clockwise or CoutnerClockwise.
-  - SpinPowerType can be Weak, Average, Strong, Super, Random, or Manual.
-  - If SPT is Manual, the SpinStrength can be set from 1 - 11.
+- Start();
+- or Start(animDirection, randPowerType, randStrength);
+  - animDirection can be Clockwise or CoutnerClockwise.
+  - randPowerType can be Infinite, Weak, Average, Strong, Super, Random, or Manual.
+    - If rPT is Manual, the randStrength will set the number of rotations +-3 random.
+  - randStrength doesn't do anything if rPT is not Manual.
 - Stop();
 
 Other
@@ -52,7 +58,7 @@ Other
   - Must create a new wheel object after this is called.
 
 Event Handlers
-- WheelSpinInfoEventHandler(Entry, string[4] SpinInfo)
+- ToolActionEventHandler(Entry, string[4] actionInfo)
   - This event is called each frame the wheel is moved.
   - Entry provided is the currently selected entry on the wheel.
   - The string array provided is a 4 part array.
@@ -60,17 +66,17 @@ Event Handlers
     - Current Angle. "1671.018"
     - Current base speed adjustment. "-0.9000244"
     - Spin Strength. "Random|4"
-- WheelStopInfoEventHandler(Entry)
+- ToolStopEventHandler(Entry)
   - This event is called when the wheel comes to a stop.
   - Entry provided is the final selected Entry.
 
 Settings
 - Wheel.AllowExceptions = true;
   - If false, actions will return null instead of throwing an Exception.
-- Wheel._WheelProperties;
+- Wheel._ToolProperties;
   - Contains all other wheel settings:
 
-_WheelProperties
+_ToolProperties
 - ArrowPosition
 - ArrowImage
 - LineColor
@@ -85,6 +91,6 @@ _WheelProperties
 - ShadowColor
 - ShadowPosition
 - ShadowLength
-- CenterDotVisible
-- CenterDotColor
-- CenterDotSize
+- CenterVisible
+- CenterColor
+- CenterSize
