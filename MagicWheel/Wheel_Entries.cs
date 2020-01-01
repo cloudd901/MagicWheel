@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 
-namespace MagicWheel
+namespace RandomTool
 {
     public partial class Wheel
     {
         public int EntryAdd(Entry entry)
         {
             if (IsDisposed) { if (AllowExceptions) { throw new InvalidOperationException("This Wheel has been Disposed."); } else { return -1; } }
-            if (IsSpinning) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy"); } else { return -1; } }
+            if (IsBusy) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy"); } else { return -1; } }
             if (entry.UniqueID == -1)
             { if (EntryList.Count() == 0) { entry.UniqueID = 0; } else { entry.UniqueID = EntryList.Last().UniqueID + 1; } }
 
@@ -17,7 +18,7 @@ namespace MagicWheel
             if (check1 != -1)
             { return -1; }
 
-            if (_WheelProperties.ForceUniqueEntryColors)
+            if (ToolProperties.ForceUniqueEntryColors)
             {
                 int check2 = EntryList.FindIndex(x => x.Name == entry.Name);
                 if (check2 != -1)
@@ -44,15 +45,38 @@ namespace MagicWheel
         }
         public bool EntryRemove(int UniqueID)
         {
-            if (IsSpinning) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy"); } else { return false; } }
+            if (IsBusy) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy"); } else { return false; } }
             try { EntryList.RemoveAt(EntryList.FindIndex(x => x.UniqueID == UniqueID)); return true; }
             catch { return false; }
         }
         public void EntriesClear()
         {
-            if (IsSpinning) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy"); } else { return; } }
+            if (IsBusy) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy"); } else { return; } }
             EntryList.Clear();
             Refresh();
+        }
+
+        public void ShuffleEntries()
+        {
+            int count = EntryList.Count();
+            List<Entry> ListtoSort = new List<Entry>(EntryList);
+            List<int> rngList = new List<int>();
+            Random r = new Random();
+            for (int i = 0; i < count; i++)
+            {
+                while (true)
+                {
+                    int newrng = r.Next(0, count);
+                    if (!rngList.Contains(EntryList[newrng].UniqueID))
+                    { rngList.Add(EntryList[newrng].UniqueID); break; }
+                }
+            }
+            ListtoSort = ListtoSort.OrderBy(x => rngList.IndexOf(x.UniqueID)).ToList();
+            EntryList.Clear();
+            for (int i = 0; i < count; i++)
+            {
+                EntryList.Add(ListtoSort[i]);
+            }
         }
 
         private Color ColorIncrementRnd(Color original, int change = 25)

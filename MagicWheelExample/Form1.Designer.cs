@@ -122,6 +122,7 @@
             this.button21 = new System.Windows.Forms.Button();
             this.button22 = new System.Windows.Forms.Button();
             this.button23 = new System.Windows.Forms.Button();
+            this.checkBox26 = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -425,6 +426,7 @@
             // groupBox1
             // 
             this.groupBox1.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.groupBox1.Controls.Add(this.checkBox26);
             this.groupBox1.Controls.Add(this.checkBox14);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.checkBox13);
@@ -446,7 +448,7 @@
             // checkBox14
             // 
             this.checkBox14.AutoSize = true;
-            this.checkBox14.Location = new System.Drawing.Point(79, 92);
+            this.checkBox14.Location = new System.Drawing.Point(80, 99);
             this.checkBox14.Name = "checkBox14";
             this.checkBox14.Size = new System.Drawing.Size(44, 17);
             this.checkBox14.TabIndex = 47;
@@ -459,7 +461,7 @@
             this.checkBox13.AutoSize = true;
             this.checkBox13.Checked = true;
             this.checkBox13.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox13.Location = new System.Drawing.Point(16, 92);
+            this.checkBox13.Location = new System.Drawing.Point(16, 99);
             this.checkBox13.Name = "checkBox13";
             this.checkBox13.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
             this.checkBox13.Size = new System.Drawing.Size(51, 17);
@@ -1145,6 +1147,17 @@
             this.button23.UseVisualStyleBackColor = true;
             this.button23.Click += new System.EventHandler(this.New_Click);
             // 
+            // checkBox26
+            // 
+            this.checkBox26.AutoSize = true;
+            this.checkBox26.Location = new System.Drawing.Point(80, 82);
+            this.checkBox26.Name = "checkBox26";
+            this.checkBox26.Size = new System.Drawing.Size(57, 17);
+            this.checkBox26.TabIndex = 49;
+            this.checkBox26.Text = "Infinite";
+            this.checkBox26.UseVisualStyleBackColor = true;
+            this.checkBox26.CheckedChanged += new System.EventHandler(this.Infinite_CheckedChanged);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -1167,6 +1180,7 @@
             this.DoubleBuffered = true;
             this.Name = "Form1";
             this.Text = "Magic Wheel Example Form";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.groupBox2.ResumeLayout(false);
@@ -1284,6 +1298,7 @@
         private System.Windows.Forms.Button button21;
         private System.Windows.Forms.Button button22;
         private System.Windows.Forms.Button button23;
+        private System.Windows.Forms.CheckBox checkBox26;
     }
 }
 

@@ -5,24 +5,26 @@ using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
 
-namespace MagicWheel
+namespace RandomTool
 {
     public partial class Wheel
     {
-        public void Spin(SpinDirection spinDirection = SpinDirection.Clockwise, SpinPowerType spinPowerType = SpinPowerType.Random, int spinStrength = 5)
+        public void Start(int animDirection = (int)Direction.Clockwise, int randPowerType = (int)PowerType.Random, int randStrength = 5)
         {
-            if (IsSpinning) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy."); } else { return; } }
-            if (wheelImage == null) { if (AllowExceptions) { throw new InvalidOperationException("Please initialize wheel using Draw()."); } else { return; } }
+            if (IsBusy) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy."); } else { return; } }
+            if (ToolProperties.objectImage == null) { if (AllowExceptions) { throw new InvalidOperationException("Please initialize wheel using Draw()."); } else { return; } }
             if (EntryList.Count <= 0) { if (AllowExceptions) { throw new IndexOutOfRangeException("Must have more than zero Entries to Spin."); } else { return; } }
 
-            if (spinPowerType != SpinPowerType.Manual) { spinStrength = UpdateSpinStrength(spinPowerType); }
-            else { spinStrength = spinStrength > 11 ? 11 : spinStrength < 1 ? 1 : spinStrength; }
-            
-            if (currentArrowDirection != _WheelProperties.ArrowPosition)
+            int manualStrength = 0;
+            if (randPowerType == (int)PowerType.Infinite) { randStrength = -1; }
+            else if (randPowerType != (int)PowerType.Manual) { randStrength = (int)UpdateRandStrength(randPowerType); }
+            else { manualStrength = randStrength; }// randStrength = randStrength > 11 ? 11 : randStrength < 1 ? 1 : randStrength; }
+
+            if (ToolProperties.currentArrowDirection != ToolProperties.ArrowPosition)
             {
                 if (_ControlWheel.InvokeRequired)
                 {
-                    ContentWindow.Invoke((MethodInvoker)delegate
+                    _ControlWheel.Invoke((MethodInvoker)delegate
                     {
                         Refresh();
                     });
@@ -35,69 +37,81 @@ namespace MagicWheel
 
             Entry currentEntry = EntryList[0];
             Color c = Color.White;
-            IsSpinning = true;
+            IsBusy = true;
 
-            Bitmap newImage = new Bitmap((int)(_WheelSize.Diameter + _WheelSize.Left + 2), (int)(_WheelSize.Diameter + _WheelSize.Top + 2));
+            Bitmap newImage = new Bitmap((int)(ToolSize.Diameter + ToolSize.Left + 2), (int)(ToolSize.Diameter + ToolSize.Top + 2));
             using (Graphics graphics = Graphics.FromImage(newImage))
             {
-                Matrix rotationMatrix = new Matrix();
-                float rotationAngle = 0;
+                Matrix animationMatrix = new Matrix();
+                float animationAngle = 0;
+                float spinAddedSpeed = 0;
                 Random r = new Random();
 
                 float random = 360;//Max rotation angles
-                float spinAddedSpeed = 0;
-                if (spinStrength < 3)
-                { random = r.Next(360, 360 * (spinStrength * 2) + 1); }
-                else if (spinStrength < 5)
-                { random = r.Next(360 * 3, 360 * (spinStrength * 2) + 1); spinAddedSpeed += 5; }
-                else if (spinStrength < 7)
-                { random = r.Next(360 * 5, 360 * (spinStrength * 2) + 1); spinAddedSpeed += 7; }
-                else if (spinStrength < 10)
-                { random = r.Next(360 * 6, 360 * (spinStrength * 2) + 1); spinAddedSpeed += 8; }
-                else if (spinStrength == 10)
-                { random = r.Next(360 * 8, 360 * (spinStrength * 2) + 1); spinAddedSpeed += 10; }
-                else if (spinStrength > 10)
-                { random = r.Next(360 * 12, 360 * (spinStrength * 3) + 1); spinAddedSpeed += 30; }
-                if (ContentWindow.InvokeRequired)
+                if (manualStrength > 0)
                 {
-                    ContentWindow.Invoke((MethodInvoker)delegate
-                    {
-                        ContentWindow.SuspendLayout();
-                    });
+                    random = (manualStrength * 360) + r.Next(-360, 361);
+                    if (random > 1000) { spinAddedSpeed = 3; }
+                    else if (random > 2000) { spinAddedSpeed = 5; }
+                    else if (random > 5000) { spinAddedSpeed = 10; }
+                    else if (random > 10000) { spinAddedSpeed = 15; }
+                    else if (random > 15000) { spinAddedSpeed = 20; }
+                    else if (random > 20000) { spinAddedSpeed = 25; }
+                    else if (random > 30000) { spinAddedSpeed = 30; }
                 }
                 else
                 {
-                    ContentWindow.SuspendLayout();
+                    if (randStrength == -1)
+                    { random = -1; spinAddedSpeed += 10; }
+                    else if (randStrength < 3)
+                    { random = r.Next(360, 360 * (randStrength * 2) + 1); }
+                    else if (randStrength < 5)
+                    { random = r.Next(360 * 3, 360 * (randStrength * 2) + 1); spinAddedSpeed += 5; }
+                    else if (randStrength < 7)
+                    { random = r.Next(360 * 5, 360 * (randStrength * 2) + 1); spinAddedSpeed += 7; }
+                    else if (randStrength < 10)
+                    { random = r.Next(360 * 6, 360 * (randStrength * 2) + 1); spinAddedSpeed += 8; }
+                    else if (randStrength == 10)
+                    { random = r.Next(360 * 8, 360 * (randStrength * 2) + 1); spinAddedSpeed += 10; }
+                    else if (randStrength > 10)
+                    { random = r.Next(360 * 12, 360 * (randStrength * 3) + 1); spinAddedSpeed += 30; }
                 }
-                while (rotationAngle <= random)
+
+                while ((random <= -1 || animationAngle <= random))// && IsBusy)
                 {
-                    float originalrotationangle = rotationAngle;
-                    rotationAngle = CalculateNextAngle(rotationAngle, random, spinAddedSpeed, spinDirection);
-                    rotationMatrix = new Matrix();
-                    rotationMatrix.RotateAt(rotationAngle, _WheelSize.Center);
-                    if (spinDirection == SpinDirection.CounterClockwise) { rotationAngle *= -1; }
-                    graphics.Transform = rotationMatrix;
+                    if (random > -1 && !IsBusy) { break; }
+                    else if (random <= -1 && !IsBusy) { random = r.Next(360, 360*3) + animationAngle; IsBusy = true; }
+
+                    float originalAnimationAngle = animationAngle;
+
+                    if (random > -1) { animationAngle = CalculateNextAngle(animationAngle, random, spinAddedSpeed, animDirection); }
+                    else { animationAngle += 2.5f; }
+
+                    animationMatrix = new Matrix();
+                    animationMatrix.RotateAt(animationAngle, ToolSize.Center);
+                    if (animDirection == (int)Direction.CounterClockwise) { animationAngle *= -1; }
+                    graphics.Transform = animationMatrix;
                     graphics.Clear(_ControlWheel.BackColor);
-                    graphics.DrawImage(wheelImage, 0, 0);
+                    graphics.DrawImage(ToolProperties.objectImage, 0, 0);
                     try { _ControlWheel.Image = newImage; }
                     catch (InvalidOperationException) {
                         try { _ControlWheel.Image = newImage; }
                         catch (InvalidOperationException) { }
                     }
-                    try { _ControlArrow.Image = _WheelProperties.arrowImage; }
+                    try { _ControlArrow.Image = ToolProperties.arrowImage; }
                     catch (InvalidOperationException) {
-                        try { _ControlArrow.Image = _WheelProperties.arrowImage; }
+                        try { _ControlArrow.Image = ToolProperties.arrowImage; }
                         catch (InvalidOperationException) { }
                     }
 
-                    currentEntry = checkAngleEntry(rotationAngle, spinDirection);
+                    currentEntry = checkAngleEntry(animationAngle, animDirection);
 
-                    WheelSpinCall?.Invoke(currentEntry, new string[] { spinPowerType.ToString() + "|" + spinStrength.ToString(), rotationAngle.ToString(), (rotationAngle - originalrotationangle).ToString(), random.ToString()});
+                    ToolActionCall?.Invoke(currentEntry, new string[] { randPowerType.ToString() + "|" + randStrength.ToString(), animationAngle.ToString(), (animationAngle - originalAnimationAngle).ToString(), random.ToString()});
                     try
                     {
-                        if (ContentWindow.InvokeRequired)
+                        if (_ControlWheel3D.Parent.InvokeRequired)
                         {
-                            ContentWindow.Invoke((MethodInvoker)delegate
+                            _ControlWheel3D.Parent.Invoke((MethodInvoker)delegate
                             {
                                 _ControlWheel.Update();
                                 _ControlArrow.Update();
@@ -111,43 +125,29 @@ namespace MagicWheel
                     }
                     catch { break; }
 
-                    rotationAngle += 1;
-
-                    if (spinStop) { break; }
-                }
-                if (ContentWindow.InvokeRequired)
-                {
-                    ContentWindow.Invoke((MethodInvoker)delegate
-                    {
-                        ContentWindow.ResumeLayout();
-                    });
-                }
-                else
-                {
-                    ContentWindow.ResumeLayout();
+                    animationAngle += 1;
                 }
             }
-            spinStop = false;
-            IsSpinning = false;
-            WheelStopCall?.Invoke(currentEntry);
+            IsBusy = false;
+            ToolStopCall?.Invoke(currentEntry);
         }
         public void Stop()
         {
-            spinStop = IsSpinning ? true : false;
+            IsBusy = false;
         }
 
-        private int UpdateSpinStrength(SpinPowerType spinPowerType)
+        private int UpdateRandStrength(int randPowerType)
         {
-            int spinStrength = 5;
+            int randStrength = 5;
             Random r = new Random();
-            if (spinPowerType == SpinPowerType.Weak) { spinStrength = r.Next(1, 3 + 1); }
-            else if (spinPowerType == SpinPowerType.Average) { spinStrength = r.Next(4, 8 + 1); }
-            else if (spinPowerType == SpinPowerType.Strong) { spinStrength = r.Next(9, 10 + 1); }
-            else if (spinPowerType == SpinPowerType.Super) { spinStrength = 11; }
-            else if (spinPowerType == SpinPowerType.Random) { spinStrength = RandomSpinStrength(); }
-            return spinStrength;
+            if (randPowerType == (int)PowerType.Weak) { randStrength = r.Next(1, 3 + 1); }
+            else if (randPowerType == (int)PowerType.Average) { randStrength = r.Next(4, 8 + 1); }
+            else if (randPowerType == (int)PowerType.Strong) { randStrength = r.Next(9, 10 + 1); }
+            else if (randPowerType == (int)PowerType.Super) { randStrength = 11; }
+            else if (randPowerType == (int)PowerType.Random) { randStrength = RandomRandStrength(); }
+            return randStrength;
         }
-        private int RandomSpinStrength()
+        private int RandomRandStrength()
         {
             Random r = new Random();
             int ss = r.Next(1, 10 + 1);
@@ -157,27 +157,27 @@ namespace MagicWheel
             return ss;
         }
 
-        private Entry checkAngleEntry(float angle, SpinDirection direction)
+        private Entry checkAngleEntry(float angle, int direction)
         {
             List<Entry> revList = EntryList.ToList();
             revList.Reverse();
 
             if (EntryList.Count > 1)
             {
-                if (direction == SpinDirection.Clockwise)
+                if (direction == (int)Direction.Clockwise)
                 {
-                    float fixAngle = EntryList[0].WheelLocation - EntryList[1].WheelLocation;// _locationData[0] - _locationData[1];//ArrowLocation.Right
-                    if (_WheelProperties.ArrowPosition == ArrowPosition.Bottom) { fixAngle += 90; }
-                    else if (_WheelProperties.ArrowPosition == ArrowPosition.Left) { fixAngle += 180; }
-                    else if (_WheelProperties.ArrowPosition == ArrowPosition.Top) { fixAngle += 270; }
+                    float fixAngle = EntryList[0].EntryLocation - EntryList[1].EntryLocation;// _locationData[0] - _locationData[1];//ArrowLocation.Right
+                    if (ToolProperties.ArrowPosition == ArrowLocation.Bottom) { fixAngle += 90; }
+                    else if (ToolProperties.ArrowPosition == ArrowLocation.Left) { fixAngle += 180; }
+                    else if (ToolProperties.ArrowPosition == ArrowLocation.Top) { fixAngle += 270; }
                     angle -= fixAngle;
                 }
                 else
                 {
-                    float fixAngle = revList[0].WheelLocation - revList[1].WheelLocation;//_locationData[0] + _locationData[1];//ArrowLocation.Right
-                    if (_WheelProperties.ArrowPosition == ArrowPosition.Bottom) { fixAngle -= 90; }
-                    else if (_WheelProperties.ArrowPosition == ArrowPosition.Left) { fixAngle -= 180; }
-                    else if (_WheelProperties.ArrowPosition == ArrowPosition.Top) { fixAngle -= 270; }
+                    float fixAngle = revList[0].EntryLocation - revList[1].EntryLocation;//_locationData[0] + _locationData[1];//ArrowLocation.Right
+                    if (ToolProperties.ArrowPosition == ArrowLocation.Bottom) { fixAngle -= 90; }
+                    else if (ToolProperties.ArrowPosition == ArrowLocation.Left) { fixAngle -= 180; }
+                    else if (ToolProperties.ArrowPosition == ArrowLocation.Top) { fixAngle -= 270; }
                     angle -= fixAngle;
                     angle *= -1;
                 }
@@ -194,21 +194,21 @@ namespace MagicWheel
                 {
                     int choice = i - 1;
                     if (choice < 0) { choice = EntryList.Count - 1; }
-                    if (angle > EntryList[i].WheelLocation) { entry = choice; break; }
+                    if (angle > EntryList[i].EntryLocation) { entry = choice; break; }
                 }
             }
             else
             {
                 for (int i = EntryList.Count - 1; EntryList.Count > i && i >= 0; i--)
                 {
-                    if (angle > EntryList[i].WheelLocation) { entry = i; break; }
+                    if (angle > EntryList[i].EntryLocation) { entry = i; break; }
                 }
             }
             return revList[entry];
         }
-        private float CalculateNextAngle(float currentAngle, float finalAngle, float spinAddedSpeed, SpinDirection direction)
+        private float CalculateNextAngle(float currentAngle, float finalAngle, float spinAddedSpeed, int direction)
         {
-            if (direction == SpinDirection.CounterClockwise)
+            if (direction == (int)Direction.CounterClockwise)
             {
                 if (finalAngle < 0) { finalAngle *= -1; }
                 if (currentAngle < 0) { currentAngle *= -1; }
@@ -255,7 +255,7 @@ namespace MagicWheel
             else if (currentAngle < (finalAngle / 1f)) { currentAngle += 0f; currentAngle += spinAddedSpeed / 20f; }
             else if (currentAngle < (finalAngle / 0.7f)) { currentAngle += 0f; currentAngle += spinAddedSpeed / 30f; }
 
-            if (direction == SpinDirection.CounterClockwise)
+            if (direction == (int)Direction.CounterClockwise)
             { currentAngle *= -1; }
 
             return currentAngle;
