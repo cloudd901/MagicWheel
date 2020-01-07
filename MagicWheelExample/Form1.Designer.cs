@@ -60,6 +60,7 @@
             this.label12 = new System.Windows.Forms.Label();
             this.button7 = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkBox26 = new System.Windows.Forms.CheckBox();
             this.checkBox14 = new System.Windows.Forms.CheckBox();
             this.checkBox13 = new System.Windows.Forms.CheckBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -122,7 +123,6 @@
             this.button21 = new System.Windows.Forms.Button();
             this.button22 = new System.Windows.Forms.Button();
             this.button23 = new System.Windows.Forms.Button();
-            this.checkBox26 = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -444,6 +444,17 @@
             this.groupBox1.TabIndex = 36;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Spin";
+            // 
+            // checkBox26
+            // 
+            this.checkBox26.AutoSize = true;
+            this.checkBox26.Location = new System.Drawing.Point(80, 82);
+            this.checkBox26.Name = "checkBox26";
+            this.checkBox26.Size = new System.Drawing.Size(57, 17);
+            this.checkBox26.TabIndex = 49;
+            this.checkBox26.Text = "Infinite";
+            this.checkBox26.UseVisualStyleBackColor = true;
+            this.checkBox26.CheckedChanged += new System.EventHandler(this.Infinite_CheckedChanged);
             // 
             // checkBox14
             // 
@@ -1146,17 +1157,6 @@
             this.button23.Text = "New";
             this.button23.UseVisualStyleBackColor = true;
             this.button23.Click += new System.EventHandler(this.New_Click);
-            // 
-            // checkBox26
-            // 
-            this.checkBox26.AutoSize = true;
-            this.checkBox26.Location = new System.Drawing.Point(80, 82);
-            this.checkBox26.Name = "checkBox26";
-            this.checkBox26.Size = new System.Drawing.Size(57, 17);
-            this.checkBox26.TabIndex = 49;
-            this.checkBox26.Text = "Infinite";
-            this.checkBox26.UseVisualStyleBackColor = true;
-            this.checkBox26.CheckedChanged += new System.EventHandler(this.Infinite_CheckedChanged);
             // 
             // Form1
             // 

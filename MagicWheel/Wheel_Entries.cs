@@ -35,7 +35,7 @@ namespace RandomTool
                             entry.Aura = ColorIncrementRnd(EntryList[check3].Aura, 50);
                         }//use new color since another name is using this color
                     }//use new color since another name is using this color
-                    
+
                 }
             }
 

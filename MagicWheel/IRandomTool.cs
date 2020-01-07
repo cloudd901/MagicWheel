@@ -20,7 +20,7 @@ namespace RandomTool
         void SendToBack();
         bool IsReadable(Color color1, Color color2);
 
-        void Start(int spinDirection = (int)Direction.Clockwise, int spinPowerType = (int)PowerType.Random, int spinStrength = 5);
+        void Start(int animDirection = (int)Direction.Clockwise, int randPowerType = (int)PowerType.Random, int randStrength = 5);
         void Stop();
 
         int EntryAdd(Entry entry);

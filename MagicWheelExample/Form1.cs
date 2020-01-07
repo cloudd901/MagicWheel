@@ -251,7 +251,9 @@ namespace MagicWheelExample
                 Random r = new Random();
                 Color randomColor = Color.FromArgb(r.Next(256), r.Next(256), r.Next(256));
                 for (int i = 1; i <= r.Next(1,10+1); i++)
-                { wheel.EntryAdd(new Entry() { Name = RandomName(), Aura = randomColor }); }
+                {
+                    wheel.EntryAdd(new Entry() { Name = RandomName(), Aura = randomColor });
+                }
             }
             else
             {

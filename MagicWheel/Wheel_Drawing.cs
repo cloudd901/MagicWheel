@@ -302,6 +302,7 @@ namespace RandomTool
         {
             if (IsBusy) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy."); } else { return; } }
             DrawWheel();
+            System.Threading.Thread.Sleep(0);
         }
 
         private PointF CalculateMidPoint(PointF p1, PointF p2)
