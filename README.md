@@ -16,6 +16,10 @@ It is using a specific interface in IRandomTool.cs so it can be plug-n-play with
 
 The example script provided includes nearly all options available for the wheel.
 
+When initializing the Wheel, any control can be used as the Parent.
+- Ex: IRandomTool hat = new Hat(this);
+- Ex: IRandomTool hat = new Hat(label1);
+
 Draw
 - Draw(LocationX, LocationY, Radius);
 - or Draw(CenterPoint, Radus);
