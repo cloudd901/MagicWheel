@@ -28,9 +28,9 @@ namespace RandomTool
         public bool AllowExceptions { get; set; } = true;
         public bool IsBusy { get; private set; } = false;
 
-        public Wheel(Form contentForm)
+        public Wheel(Control contentForm)
         {
-            Form ContentWindow = contentForm ?? throw new NullReferenceException("A valid control must be used.");
+            Control ContentWindow = contentForm ?? throw new NullReferenceException("A valid control must be used.");
             _ControlWheel3D.Parent = ContentWindow;
             ContentWindow.Controls.Add(_ControlWheel3D);
             _ControlWheel3D.Controls.Add(_ControlWheel);
