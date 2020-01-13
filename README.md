@@ -17,8 +17,8 @@ It is using a specific interface in IRandomTool.cs so it can be plug-n-play with
 The example script provided includes nearly all options available for the wheel.
 
 When initializing the Wheel, any control can be used as the Parent.
-- Ex: IRandomTool hat = new Wheel(this);
-- Ex: IRandomTool hat = new Wheel(label1);
+- Ex: IRandomTool wheel = new Wheel(this);
+- Ex: IRandomTool wheel = new Wheel(label1);
 
 Draw
 - Draw(LocationX, LocationY, Radius);
