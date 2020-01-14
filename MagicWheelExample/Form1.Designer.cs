@@ -1166,7 +1166,7 @@
             // 
             this.numericUpDown1.DecimalPlaces = 3;
             this.numericUpDown1.Increment = new decimal(new int[] {
-            1,
+            2,
             0,
             0,
             131072});
@@ -1185,10 +1185,10 @@
             this.numericUpDown1.Size = new System.Drawing.Size(52, 20);
             this.numericUpDown1.TabIndex = 54;
             this.numericUpDown1.Value = new decimal(new int[] {
-            1,
+            8,
             0,
             0,
-            65536});
+            131072});
             this.numericUpDown1.ValueChanged += new System.EventHandler(this.NumericUpDown1_ValueChanged);
             // 
             // label25
