@@ -582,5 +582,15 @@ namespace MagicWheelExample
             wheel.ToolActionCall -= Wheel_WheelSpinCall;
             wheel.ToolStopCall -= Wheel_WheelStopCall;
         }
+
+        private void NumericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+            wheel.ToolProperties.AnimationSpeed = (float)numericUpDown1.Value;
+        }
+
+        private void CheckBox27_CheckedChanged(object sender, EventArgs e)
+        {
+            wheel.ToolProperties.AnimationSpeedBoost = checkBox27.Checked;
+        }
     }
 }

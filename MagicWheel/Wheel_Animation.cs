@@ -10,12 +10,14 @@ namespace RandomTool
 {
     public partial class Wheel
     {
+        bool wheelReversePaused = false;
         public void Start(int animDirection = (int)Direction.Clockwise, int randPowerType = (int)PowerType.Random, int randStrength = 5)
         {
             if (IsBusy) { if (AllowExceptions) { throw new InvalidOperationException("Wheel is currently busy."); } else { return; } }
             if (ToolProperties.objectImage == null) { if (AllowExceptions) { throw new InvalidOperationException("Please initialize wheel using Draw()."); } else { return; } }
             if (EntryList.Count <= 0) { if (AllowExceptions) { throw new IndexOutOfRangeException("Must have more than zero Entries to Spin."); } else { return; } }
 
+            wheelReversePaused = true;
             int manualStrength = 0;
             if (randPowerType == (int)PowerType.Infinite) { randStrength = -1; }
             else if (randPowerType != (int)PowerType.Manual) { randStrength = (int)UpdateRandStrength(randPowerType); }
@@ -86,7 +88,7 @@ namespace RandomTool
                     float originalAnimationAngle = animationAngle;
 
                     if (random > -1) { animationAngle = CalculateNextAngle(animationAngle, random, spinAddedSpeed, animDirection); }
-                    else { animationAngle += 4f; }
+                    else { animationAngle += 40f * ToolProperties.AnimationSpeed; }
 
                     animationMatrix = new Matrix();
                     animationMatrix.RotateAt((animDirection == (int)Direction.CounterClockwise) ? animationAngle * -1 : animationAngle, ToolSize.Center);
@@ -224,96 +226,35 @@ namespace RandomTool
                 if (currentAngle < 0) { currentAngle *= -1; }
             }
             
-            //---------------New Wheel speed code------------
             float remaining = finalAngle - currentAngle;
             float perc = (remaining * 100f) / finalAngle;
+            // perc is percent remaining from 100 to 0
 
-            currentAngle += perc * 0.1f;
+            bool pullbackCheck = currentAngle < pullback;
+            float spinSpeed = ToolProperties.animationSpeed;
+            float pullSpeed = 0.03f;
 
-            float addSpeed = spinAddedSpeed / ((100f - perc) + 0.01f);
+            // Code to adjust backup spin animation if speed is set too low.
+            if (pullbackCheck)
+            {
+                if (spinSpeed <= 0.04f) { pullSpeed = spinSpeed - 0.02f; }
+                if (pullSpeed <= 0f) { spinSpeed = 0.03f; pullSpeed = 0.01f; }
+            }
+            // -------
 
-            bool pullbackCheck = (currentAngle < pullback);
-            if (pullbackCheck) { currentAngle -= perc * 0.06f; currentAngle *= -1f; }
+            currentAngle += perc * spinSpeed;
+            pullbackCheck = currentAngle < pullback;
 
+            float addSpeed;
+            if (ToolProperties.AnimationSpeedBoost) { addSpeed = spinAddedSpeed / ((100f - perc) + 0.01f); }
+            else { addSpeed = 0f; }
+
+            if (pullbackCheck) { currentAngle -= perc * pullSpeed; currentAngle *= -1f; }
             //Steady slowdown by 0.02 angles stacking past 40 percent remaining.
             else if (perc <= 40f) { currentAngle -= perc - (40f - ((40f - perc) * 1.02f)) - 0.02f; }
-            else if ((int)currentAngle <= (int)(pullback + 2f) && (int)currentAngle >= (int)(pullback - 2f)) { Thread.Sleep(500); }
-
-            //else if (perc < 5f) { currentAngle -= 0.8f; }
-            //else if (perc < 10f) { currentAngle -= 0.6f; }
-            //else if (perc < 15f) { currentAngle -= 0.5f; }
-            //else if (perc < 20f) { currentAngle -= 0.4f; }
-            //else if (perc < 25f) { currentAngle -= 0.3f; }
-            //else if (perc < 30f) { currentAngle -= 0.2f; }
-            //else if (perc < 35f) { currentAngle -= 0.1f; }
+            else if (wheelReversePaused) { wheelReversePaused = false; Thread.Sleep(500); }
 
             if (!pullbackCheck && addSpeed > 0f) { currentAngle += addSpeed; }
-            //--------------------End-----------------------
-
-            ////-----Old wheel speed code for reference-----
-            //if (remaining < 720 && remaining >= 680) { currentAngle -= 0.05f; currentAngle += spinAddedSpeed / 20f; }
-            //else if (remaining < 680 && remaining >= 500) { currentAngle -= 0.05f; currentAngle += spinAddedSpeed / 25f; }
-            //else if (remaining < 420 && remaining >= 360) { currentAngle -= 0.05f; currentAngle += spinAddedSpeed / 30f; }
-            //else if (remaining < 360 && remaining >= 300) { currentAngle -= 0.05f; currentAngle += spinAddedSpeed / 35f; }
-            //else if (remaining < 510 && remaining >= 480) { currentAngle -= 0.05f; currentAngle += spinAddedSpeed / 40f; }
-            //else if (remaining < 480 && remaining >= 420) { currentAngle -= 0.05f; currentAngle += spinAddedSpeed / 50f; }
-            //else if (remaining < 420 && remaining >= 360) { currentAngle -= 0.05f; currentAngle += spinAddedSpeed / 60f; }
-            //else if (remaining < 360 && remaining >= 300) { currentAngle -= 0.05f; currentAngle += spinAddedSpeed / 70f; }
-
-            //else if (remaining < 360 && remaining >= 300) { currentAngle -= 0.05f; currentAngle += spinAddedSpeed / 80f; }
-            //else if (remaining < 300 && remaining >= 240) { currentAngle -= 0.1f; currentAngle += spinAddedSpeed / 90f; }
-            //else if (remaining < 240 && remaining >= 180) { currentAngle -= 0.2f; currentAngle += spinAddedSpeed / 95f; }
-            //else if (remaining < 180 && remaining >= 160) { currentAngle -= 0.23f; }
-
-            //else if (remaining < 180 && remaining >= 140) { currentAngle -= 0.26f; }
-            //else if (remaining < 180 && remaining >= 120) { currentAngle -= 0.3f; }
-            //else if (remaining < 120 && remaining >= 100) { currentAngle -= 0.33f; }
-            //else if (remaining < 120 && remaining >= 80) { currentAngle -= 0.36f; }
-
-            //else if (remaining < 120 && remaining >= 60) { currentAngle -= 0.4f; }
-            //else if (remaining < 60 && remaining >= 40) { currentAngle -= 0.5f; }
-            //else if (remaining < 40 && remaining >= 30) { currentAngle -= 0.6f; }
-
-            //else if (remaining < 40 && remaining >= 20) { currentAngle -= 0.65f; }
-
-            //else if (remaining < 20 && remaining >= 10) { currentAngle -= 0.7f; }
-            //else if (remaining < 10 && remaining >= 5) { currentAngle -= 0.8f; }
-            //else if (remaining < 5 && remaining >= 0) { currentAngle -= 0.9f; }
-            //else if (remaining < 2 && remaining >= 0) { currentAngle -= 0.95f; }
-
-            //else if (currentAngle < (finalAngle / 200f)) { currentAngle += 5f; }//slow
-
-            //else if (currentAngle < (finalAngle / 15f)) { currentAngle += 5f; currentAngle += spinAddedSpeed; }//fast
-            //else if (currentAngle < (finalAngle / 14f)) { currentAngle += 4.7f; currentAngle += spinAddedSpeed; }
-            //else if (currentAngle < (finalAngle / 13f)) { currentAngle += 4.3f; currentAngle += spinAddedSpeed; }
-            //else if (currentAngle < (finalAngle / 12f)) { currentAngle += 4f; currentAngle += spinAddedSpeed; }
-            //else if (currentAngle < (finalAngle / 11f)) { currentAngle += 3.7f; currentAngle += spinAddedSpeed; }
-            //else if (currentAngle < (finalAngle / 10f)) { currentAngle += 3.3f; currentAngle += spinAddedSpeed; }
-            //else if (currentAngle < (finalAngle / 9f)) { currentAngle += 3f; currentAngle += spinAddedSpeed; }
-            //else if (currentAngle < (finalAngle / 8f)) { currentAngle += 2.7f; currentAngle += spinAddedSpeed; }
-            //else if (currentAngle < (finalAngle / 7f)) { currentAngle += 2.3f; currentAngle += spinAddedSpeed; }
-            //else if (currentAngle < (finalAngle / 6.5f)) { currentAngle += 2f; currentAngle += spinAddedSpeed; }
-            //else if (currentAngle < (finalAngle / 6f)) { currentAngle += 1.7f; currentAngle += spinAddedSpeed; }
-            //else if (currentAngle < (finalAngle / 5.5f)) { currentAngle += 1.3f; currentAngle += spinAddedSpeed; }
-            //else if (currentAngle < (finalAngle / 5f)) { currentAngle += 1.1f; currentAngle += spinAddedSpeed; }
-            //else if (currentAngle < (finalAngle / 4.5f)) { currentAngle += 0.7f; currentAngle += spinAddedSpeed; }
-            //else if (currentAngle < (finalAngle / 4f)) { currentAngle += 0.3f; currentAngle += spinAddedSpeed; }
-            //else if (currentAngle < (finalAngle / 3.5f)) { currentAngle += 0f; currentAngle += spinAddedSpeed / 1.5f; }
-            //else if (currentAngle < (finalAngle / 3f)) { currentAngle += 0f; currentAngle += spinAddedSpeed / 1f; }
-            //else if (currentAngle < (finalAngle / 2.7f)) { currentAngle += 0f; currentAngle += spinAddedSpeed / 1.5f; }
-            //else if (currentAngle < (finalAngle / 2.5f)) { currentAngle += 0f; currentAngle += spinAddedSpeed / 2f; }
-            //else if (currentAngle < (finalAngle / 2.3f)) { currentAngle += 0f; currentAngle += spinAddedSpeed / 2.5f; }
-            //else if (currentAngle < (finalAngle / 2f)) { currentAngle += 0f; currentAngle += spinAddedSpeed / 3f; }
-            //else if (currentAngle < (finalAngle / 1.7f)) { currentAngle += 0f; currentAngle += spinAddedSpeed / 4f; }
-            //else if (currentAngle < (finalAngle / 1.5f)) { currentAngle += 0f; currentAngle += spinAddedSpeed / 5f; }
-            //else if (currentAngle < (finalAngle / 1.3f)) { currentAngle += 0f; currentAngle += spinAddedSpeed / 10f; }
-            //else if (currentAngle < (finalAngle / 1.2f)) { currentAngle += 0f; currentAngle += spinAddedSpeed / 13f; }
-            //else if (currentAngle < (finalAngle / 1.1f)) { currentAngle += 0f; currentAngle += spinAddedSpeed / 16f; }
-            //else if (currentAngle < (finalAngle / 1f)) { currentAngle += 0f; currentAngle += spinAddedSpeed / 18f; }
-            ////-------------------End--------------------
-            
-            //if (direction == (int)Direction.CounterClockwise)
-            //{ currentAngle *= -1; }
 
             return currentAngle;
         }

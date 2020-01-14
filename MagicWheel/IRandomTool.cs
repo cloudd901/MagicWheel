@@ -49,6 +49,8 @@ namespace RandomTool
         internal bool isNewArrowImage = false;
         internal Image objectImage = null;
         internal Image objectImage3D = null;
+        internal float animationSpeed = 0.08f;
+
         public TextType TextToShow { get; set; } = TextType.NameAndID;
         public bool ForceUniqueEntryColors { get; set; } = false;
         public Color LineColor { get; set; } = Color.Black;
@@ -64,6 +66,8 @@ namespace RandomTool
         public bool CenterVisible { get; set; } = true;
         public Color CenterColor { get; set; } = Color.DarkGray;
         public int CenterSize { get; set; } = 2;
+        public float AnimationSpeed { get => animationSpeed; set => animationSpeed = animationSpeed > 2f ? 2f : animationSpeed < 0.001f ? 0.001f : value; }
+        public bool AnimationSpeedBoost { get; set; } = true;
     }
     internal class ObjectSize
     {
